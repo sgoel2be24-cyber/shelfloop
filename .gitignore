@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+backend/.venv/
+
+# local database — regenerated deterministically by `python -m app.seed`
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Node
+node_modules/
+frontend/.vite/
+
+# OS / editor
+.DS_Store
+Thumbs.db

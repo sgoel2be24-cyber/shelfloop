@@ -1,0 +1,229 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-ivory font-sans text-ink antialiased;
+  margin: 0;
+  /* faint paper grain so the page doesn't read as a flat generated canvas */
+  background-image:
+    radial-gradient(rgba(31, 36, 48, 0.028) 1px, transparent 1.4px),
+    radial-gradient(rgba(232, 112, 42, 0.02) 1px, transparent 1.4px);
+  background-size: 22px 22px, 34px 34px;
+  background-position: 0 0, 11px 13px;
+}
+
+/* headings carry a touch of personality */
+h1, h2, h3 {
+  letter-spacing: -0.01em;
+}
+
+/* ---------- building blocks ---------- */
+
+.card {
+  @apply relative rounded-2xl border border-ink/10 bg-white;
+  box-shadow: 0 1px 2px rgba(31, 36, 48, 0.05), 0 8px 24px -12px rgba(46, 49, 146, 0.14);
+}
+
+/* rubber-stamp status badge: rotated, letterpressed, ink-stamp border */
+.stamp {
+  @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wider;
+  border: 2px solid currentColor;
+  border-radius: 6px 10px 7px 9px;
+  transform: rotate(-1.2deg);
+  opacity: 0.92;
+  text-transform: uppercase;
+}
+
+/* receipt-style perforated bottom edge: punched circles of the ivory page
+   background overlap the card bottom */
+.perforated {
+  margin-bottom: 0.5rem;
+}
+.perforated::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 14px;
+  background-image: radial-gradient(circle at 9px 0px, #faf5ec 6px, rgba(250, 245, 236, 0) 6.5px);
+  background-size: 18px 14px;
+  background-repeat: repeat-x;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.receipt-row {
+  @apply flex items-start justify-between gap-3 border-t border-dashed border-ink/15 py-2;
+}
+
+.receipt-row:first-child {
+  border-top: 0;
+}
+
+.field {
+  @apply w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-base text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20;
+}
+
+.label {
+  @apply mb-1 block text-sm font-semibold text-ink/70;
+}
+
+.btn {
+  @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg px-4 py-2 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply btn bg-brand text-white hover:bg-brand/90;
+}
+
+.btn-accent {
+  @apply btn bg-accent text-white hover:bg-accent/90;
+}
+
+.btn-ghost {
+  @apply btn border border-ink/20 bg-white text-ink hover:bg-ivory;
+}
+
+.btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: #2e3192;
+}
+
+input[type='date'],
+input[type='number'] {
+  @apply tabular;
+}
+
+/* ---------- polish layer ---------- */
+
+.sl-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(31, 36, 48, 0.06);
+}
+.sl-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: sl-shimmer 1.4s infinite;
+}
+@keyframes sl-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.card {
+  transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+}
+
+.btn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+:focus-visible {
+  outline: 3px solid rgba(46, 49, 146, 0.45);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: rgba(232, 112, 42, 0.25);
+}
+
+/* slim scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(31, 36, 48, 0.25) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(31, 36, 48, 0.2);
+  border-radius: 8px;
+}
+
+/* page headers get a subtle indigo underline flourish */
+h1.text-2xl {
+  position: relative;
+  padding-bottom: 0.35rem;
+}
+h1.text-2xl::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  bottom: 0;
+  width: 58px;
+  height: 5px;
+  border-radius: 40% 60% 55% 45% / 60% 40% 60% 40%;
+  background: #e8702a;
+  transform: rotate(-1.5deg);
+  opacity: 0.85;
+}
+
+/* sticky bottom-nav elevation */
+nav.fixed {
+  box-shadow: 0 -6px 24px rgba(31, 36, 48, 0.08);
+}
+
+/* ---------- warmth details ---------- */
+
+.btn {
+  border-radius: 14px;
+}
+.btn-primary, .btn-accent {
+  box-shadow: 0 2px 0 rgba(31, 36, 48, 0.18), 0 6px 16px -8px rgba(232, 112, 42, 0.5);
+}
+.btn-ghost {
+  border-radius: 12px;
+}
+
+/* slight tilt on the greeting so the header feels set by hand */
+.hand-tilt {
+  transform: rotate(-0.6deg);
+}
+
+.chip {
+  border-radius: 999px;
+}
+
+/* nav tiles: less mechanical than equal squares */
+.sidebar-link {
+  border-radius: 14px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.sidebar-link:hover {
+  transform: translateX(2px);
+}
