@@ -247,15 +247,17 @@ export function PlanReceipt({ plan }: { plan: Plan }) {  const { t, lang } = use
                   : [{ label: t('pl.whyNotExpiry'), cashPaise: plan.why_not.expiry_move_only?.cash_paise ?? 0, coveragePct: plan.why_not.expiry_move_only?.coverage_pct ?? 0 }]),
                 {
                   label: t('pl.whyNotThis'),
-                  cashPaise: (plan.costs?.purchases_paise ?? 0) + (plan.costs?.transport_paise ?? 0) + (plan.costs?.transaction_fee_paise ?? 0),
+                  cashPaise: Object.values(plan.costs.cash_out_by_shop ?? {}).reduce((sum, amount) => sum + amount, 0),
                   coveragePct: coveragePct(plan),
                   highlight: true,
                 },
               ]}
             />
-            {plan.why_not.expiry_move_only?.note && (
-              <p className="mt-2 text-xs text-ink/60">{plan.why_not.expiry_move_only.note}</p>
-            )}
+            <p className="mt-3 text-xs text-ink/60">
+              {lang === 'hi'
+                ? 'तुलना में हर दुकान का ज़रूरी नकद जोड़ा गया है: खरीद, परिवहन और दिए जाने वाले संतुलन भुगतान। मिलने वाला भुगतान पहले से उपलब्ध नहीं माना गया है।'
+                : 'Compared using total cash each owner must have ready: purchases, transport and outgoing balancing payments. Incoming payments are not available in advance.'}
+            </p>
           </div>
         </section>
       )}

@@ -4,22 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        ivory: '#FAF5EC',
-        brand: '#2E3192',
-        accent: '#E8702A',
-        ink: '#1F2430',
+        ivory: '#F5F7F3',
+        brand: '#174C3C',
+        accent: '#D86736',
+        ink: '#21352D',
       },
       fontFamily: {
         sans: [
-          '"Baloo 2"',
-          'Noto Sans Devanagari',
           'system-ui',
           '-apple-system',
           'Segoe UI',
           'Roboto',
+          '"Baloo 2"',
           'sans-serif',
         ],
-        display: ['"Baloo 2"', 'Noto Sans Devanagari', 'sans-serif'],
+        display: ['system-ui', '"Baloo 2"', 'sans-serif'],
       },
     },
   },

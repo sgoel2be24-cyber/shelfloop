@@ -27,7 +27,7 @@ def make_ctx(shops, lots, needs, quotes):
     for (shop, prod), (qty, cost, slow) in lots.items():
         ctx["lots"][(shop, prod)] = [{
             "id": len(ctx["lots"]) * 10 + shop, "shop_id": shop, "product_id": prod, "qty": qty,
-            "cost_paise": cost, "expiry_date": None, "condition": "sealed",
+            "cost_paise": cost, "expiry_date": "2027-12-31", "condition": "sealed",
             "permit_share": 1, "slow": slow, "retained_floor": 0, "version": 1}]
     return ctx
 
@@ -95,8 +95,8 @@ def test_cpsat_matches_exhaustive_on_small_cases():
         brute = brute_force(cycles, ctx)
         assert brute is not None
         assert cpsat["status"] == "OPTIMAL"
-        assert cpsat["objective"] == brute["objective"], (
-            f"CP-SAT {cpsat['objective']} != exhaustive {brute['objective']}")
+        assert cpsat["objective_vector"] == brute["objective_vector"], (
+            f"CP-SAT {cpsat['objective_vector']} != exhaustive {brute['objective_vector']}")
 
 
 def test_retained_floor_and_share_permission_are_respected():
@@ -118,12 +118,12 @@ def test_cash_limit_is_never_exceeded():
     result = solve_model(cycles, ctx, 5000)
     assert result["status"] in ("OPTIMAL", "FEASIBLE")
     # recompute cash-out for shop 1 exactly as the model does
-    from app.planner.solve import _balancing_per_pack, _shops_in, _transport_paise
+    from app.planner.solve import _shops_in, cycle_cash_out
     cash = 0
     for i, c in enumerate(cycles):
         q = result["cycle_qty"][i]
         if q and 1 in _shops_in(c):
-            cash += _balancing_per_pack(c, 1) * q + _transport_paise(c) * q // len(_shops_in(c))
+            cash += cycle_cash_out(c, q)[1]
     shop_of_need = {n["id"]: n["shop_id"] for n in ctx["needs"]}
     for (nid, pid), q in result.get("buy", {}).items():
         if shop_of_need[nid] == 1:
@@ -138,3 +138,135 @@ def test_no_plan_found_is_not_reported_infeasible():
     result = solve_model(cycles, ctx, 200)
     assert result["status"] in ("OPTIMAL", "FEASIBLE", "UNKNOWN")
     assert result["status"] != "INFEASIBLE"
+
+
+def test_expensive_affordable_need_still_has_coverage_priority():
+    ctx = make_ctx({1: (0, 0, 3_000_000)}, {},
+                   [{"shop": 1, "product": 1, "qty": 1}], {1: 2_000_000})
+    result = solve_model([], ctx, 1000)
+    assert result.get("buy", {}).get((1, 1)) == 1
+
+
+def test_slow_stock_bonus_cannot_make_a_more_expensive_plan_win():
+    ctx = make_ctx({1: (0, 0, 100000), 2: (0, 0, 100000)},
+                   {(1, 1): (1, 100, 1), (2, 2): (1, 100, 1)},
+                   [{"shop": 1, "product": 2, "qty": 1},
+                    {"shop": 2, "product": 1, "qty": 1}], {1: 2400, 2: 2400})
+    result = solve_model(enumerate_cycles(ctx), ctx, 1000)
+    assert sum(result.get("buy", {}).values()) == 2
+    assert not any(result["cycle_qty"])
+
+
+def test_receiving_balancing_cash_does_not_finance_purchases():
+    from app.planner.solve import plan
+    ctx = make_ctx({1: (0, 0, 20000), 2: (0, 0, 200000)},
+                   {(1, 1): (1, 100000, 1), (2, 2): (1, 1000, 1)},
+                   [{"shop": 1, "product": 2, "qty": 1},
+                    {"shop": 2, "product": 1, "qty": 1},
+                    {"shop": 1, "product": 3, "qty": 1}], {1: 100000, 2: 1000, 3: 100000})
+    proposal = plan(ctx, enumerate_cycles(ctx), {"time_limit_ms": 1000})
+    for sid, cash in proposal["costs"]["cash_out_by_shop"].items():
+        assert cash <= ctx["shops"][int(sid)]["cash_limit_paise"]
+
+
+def test_no_overdelivery_of_a_need():
+    # Supplier pack costs less than cycle transport, but secondary slow-stock
+    # incentives must not allow filling the same confirmed need twice.
+    ctx = make_ctx(**DEMO)
+    ctx["needs"] = [{**n, "qty": 1} for n in ctx["needs"]]
+    ctx["quotes"] = {pid: 1 for pid in ctx["quotes"]}
+    result = solve_model(enumerate_cycles(ctx), ctx, 1000)
+    covered = {n["id"]: 0 for n in ctx["needs"]}
+    cycles = enumerate_cycles(ctx)
+    for cycle, qty in zip(cycles, result["cycle_qty"]):
+        for leg in cycle.legs:
+            covered[leg.need_id] += qty
+    for (nid, _), qty in result["buy"].items():
+        covered[nid] += qty
+    assert all(covered[n["id"]] <= n["qty"] for n in ctx["needs"])
+
+
+def test_transport_callout_is_once_and_every_paise_is_allocated():
+    from app.planner.solve import cycle_transport_paise, cycle_transport_shares
+    from app.config import TRANSPORT_BASE_PAISE
+    ctx = make_ctx(**DEMO)
+    cycle = enumerate_cycles(ctx)[0]
+    one, seven = cycle_transport_paise(cycle, 1), cycle_transport_paise(cycle, 7)
+    assert seven == TRANSPORT_BASE_PAISE + (one - TRANSPORT_BASE_PAISE) * 7
+    shares = cycle_transport_shares(cycle, 7)
+    assert sum(shares.values()) == seven
+    # Each component is apportioned in integer paise; no remainder disappears.
+    assert max(shares.values()) - min(shares.values()) <= 8
+    assert sum(cycle_transport_shares(cycle, 0).values()) == 0
+
+
+def test_quote_minimum_order_selects_an_eligible_supplier():
+    ctx = make_ctx({1: (0, 0, 2000)}, {}, [{"shop": 1, "product": 1, "qty": 2}], {1: 100})
+    ctx["quote_options"] = {1: [{"price_paise": 100, "min_order_packs": 10},
+                               {"price_paise": 800, "min_order_packs": 1}]}
+    result = solve_model([], ctx, 1000)
+    assert result["buy"] == {(1, 1): 2}
+    assert result["buy_prices"] == {(1, 1): 800}
+    assert result["objective_vector"][1] == -1600
+
+
+def test_unknown_or_expired_dates_are_not_shared():
+    for invalid in (None, "not-a-date", "2026-10-25"):
+        ctx = make_ctx(**DEMO)
+        ctx["lots"][(1, 101)][0]["expiry_date"] = invalid
+        assert not enumerate_cycles(ctx), invalid
+
+
+def test_shop_opt_out_and_existing_reservations_are_respected():
+    ctx = make_ctx(**DEMO)
+    ctx["shops"][1]["sharing_opt_in"] = 0
+    assert not enumerate_cycles(ctx)
+    ctx = make_ctx(**DEMO)
+    ctx["lots"][(1, 101)][0]["reserved_qty"] = 20
+    assert not enumerate_cycles(ctx)
+
+
+def test_candidate_limit_is_enforced_and_reported(monkeypatch):
+    import app.planner.graph as graph
+    ctx = make_ctx(**DEMO)
+    monkeypatch.setattr(graph, "MAX_CYCLES", 1)
+    assert len(enumerate_cycles(ctx)) == 1
+    assert ctx["candidate_truncated"]
+
+
+def test_zero_deadline_does_not_claim_infeasibility_or_optimality():
+    result = solve_model([], make_ctx(**DEMO), 0)
+    assert result["status"] == "UNKNOWN"
+    assert result["objective"] is None
+    assert not result["proven_optimal"]
+
+
+def test_twenty_random_small_cases_match_all_exhaustive_objectives():
+    import random
+    rng = random.Random(20261025)
+    for _ in range(20):
+        ctx = make_ctx(
+            {s: (0, 0, rng.randrange(1, 12) * 2000) for s in (1, 2, 3)},
+            {(s, s): (3, rng.randrange(100, 5000), rng.randrange(2)) for s in (1, 2, 3)},
+            [{"shop": s, "product": s % 3 + 1, "qty": rng.randrange(1, 4),
+              "urgency": rng.choice(["urgent", "normal"])} for s in (1, 2, 3)],
+            {p: rng.randrange(100, 5000) for p in (1, 2, 3)})
+        cycles = enumerate_cycles(ctx)
+        solved = solve_model(cycles, ctx, 1000)
+        brute = brute_force(cycles, ctx)
+        assert solved["status"] == "OPTIMAL"
+        assert solved["objective_vector"] == brute["objective_vector"]
+
+
+def test_receipt_totals_match_solver_budget_vector():
+    from app.planner.solve import plan
+    ctx = make_ctx(**DEMO)
+    receipt = plan(ctx, enumerate_cycles(ctx), {"time_limit_ms": 1000})
+    costs = receipt["costs"]
+    assert costs["gross_cash_out_paise"] == sum(costs["cash_out_by_shop"].values())
+    assert -receipt["solver"]["objective_vector"][1] == costs["gross_cash_out_paise"]
+    assert costs["gross_cash_out_paise"] == costs["external_cash_paise"] + costs["balancing_cash_paise"]
+    assert costs["transport_paise"] == sum(c["transport_paise"] for c in receipt["cycles"])
+    for cycle in receipt["cycles"]:
+        assert cycle["transport_paise"] == sum(cycle["transport_by_shop_paise"].values())
+        assert all("need_id" in leg for leg in cycle["legs"])

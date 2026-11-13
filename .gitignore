@@ -17,3 +17,8 @@ frontend/.vite/
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# Local validation work and optional model weights
+backend/.pytest-tmp*/
+models/
+evaluation/*.log

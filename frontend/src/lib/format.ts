@@ -35,7 +35,8 @@ export function formatDateTime(iso: string | null, lang: Lang): string {
   })
 }
 
-export function shortHash(hash: string): string {
+export function shortHash(hash: string | null | undefined): string {
+  if (!hash) return '—'
   if (hash.length <= 10) return hash
   return `${hash.slice(0, 6)}…${hash.slice(-4)}`
 }

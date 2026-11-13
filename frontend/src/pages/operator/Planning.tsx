@@ -48,6 +48,7 @@ export default function Planning() {
   const [radius, setRadius] = useState('3')
   const [includePurchases, setIncludePurchases] = useState(true)
   const [urgentOnly, setUrgentOnly] = useState(false)
+  const [demoOnly, setDemoOnly] = useState(true)
 
   const name = (id: number) => shopLabel(shops?.find((s) => s.id === id), id, lang)
 
@@ -59,6 +60,7 @@ export default function Planning() {
         radius_km: Number(radius) > 0 ? Number(radius) : 3.0,
         include_purchases: includePurchases,
         urgent_only: urgentOnly,
+        shop_ids: demoOnly ? [1, 2, 3] : undefined,
         ...(params ?? {}),
       }
       op.setLastParams(p)
@@ -74,7 +76,7 @@ export default function Planning() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [timeLimitS, minShelf, radius, includePurchases, urgentOnly, op.setLastParams, push, t],
+    [timeLimitS, minShelf, radius, includePurchases, urgentOnly, demoOnly, op.setLastParams, push, t],
   )
 
   // poll the run every 1s until done/error
@@ -215,6 +217,8 @@ export default function Planning() {
             {t('pl.urgentOnly')}
           </label>
         </div>
+        <label className="mt-4 flex items-center gap-2 text-sm"><input type="checkbox" checked={demoOnly} disabled={running} onChange={e => setDemoOnly(e.target.checked)}/>{lang === 'hi' ? 'डेमो की 3 दुकानों पर ध्यान दें (1–3)' : 'Focus on the 3 demo shops (1–3)'}</label>
+        <p className="mt-1 text-xs text-ink/55">{lang === 'hi' ? '25 दुकानों की योजना के लिए इसे बंद करें।' : 'Turn this off to plan across all 25 shops.'}</p>
         <div className="mt-3">
           <button type="button" className="btn-primary" disabled={running || starting} onClick={() => void startRun()}>
             {running || starting ? t('op.running') : run ? t('op.rerun') : t('op.runPlanner')}
@@ -303,9 +307,9 @@ export default function Planning() {
                   {dispatching ? t('op.dispatching') : t('op.dispatch')}
                 </button>
               )}
-              <button type="button" className="btn-ghost" disabled={dispatching} onClick={() => void doCancel()}>
+              {['PROPOSED', 'AWAITING_APPROVAL', 'APPROVED'].includes(String(op.plan.status)) && <button type="button" className="btn-ghost" disabled={dispatching} onClick={() => void doCancel()}>
                 {t('op.cancel')}
-              </button>
+              </button>}
             </div>
           </div>
 
@@ -391,7 +395,7 @@ export default function Planning() {
               <tbody>
                 {history.data.map((h) => (
                   <tr key={h.id} className="border-b border-ink/5 last:border-0">
-                    <td className="py-1.5 pr-3 tabular font-bold">{h.id}</td>
+                    <td className="py-1.5 pr-3 tabular font-bold"><button className="min-h-[44px] rounded-lg px-2 text-brand underline underline-offset-4" onClick={async () => {try {const p=await getPlan(h.id);op.setPlan(p);await op.refreshStatus(p.id)} catch(e) {push(e instanceof Error ? e.message : t('common.error'),'err')}}} aria-label={(lang === 'hi' ? 'योजना खोलें ' : 'Open plan ') + h.id}>#{h.id}</button></td>
                     <td className="py-1.5 pr-3 tabular">v{h.version}</td>
                     <td className="py-1.5 pr-3"><StatusChip status={h.status} /></td>
                     <td className="py-1.5 pr-3 text-xs">{h.solver_status ?? '—'}</td>

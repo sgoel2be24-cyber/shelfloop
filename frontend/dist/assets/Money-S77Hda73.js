@@ -1,0 +1,1 @@
+import{n as e,r as t}from"./i18n-DY-yhnu0.js";import{n}from"./format-IMZZlPfp.js";var r=t();function i({paise:t,className:i}){let{lang:a}=e();return(0,r.jsx)(`span`,{className:`tabular whitespace-nowrap ${i??``}`,children:n(t,a)})}export{i as t};

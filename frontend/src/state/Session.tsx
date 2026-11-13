@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { clearToken } from '../api/client'
+import { invalidateShops } from '../lib/data'
+import { flushOutbox } from '../api/outbox'
 import { getSession, storeSession } from '../api/sessionStore'
 import type { Role } from '../api/types'
 
@@ -22,11 +24,14 @@ const SessionContext = createContext<SessionCtx | null>(null)
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<SessionInfo | null>(getSession)
   const login = useCallback((info: SessionInfo) => {
+    invalidateShops()
     storeSession(info)
     setSession(info)
+    void flushOutbox()
   }, [])
   const logout = useCallback(() => {
     clearToken()
+    invalidateShops()
     setSession(null)
   }, [])
   const value = useMemo(() => ({ session, login, logout }), [session, login, logout])

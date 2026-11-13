@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { ApiError, confirmCaptureRaw, createCapture, inventoryConfirm, newIdemKey } from '../../api/client'
+import { useEffect, useState } from 'react'
+import { ApiError, confirmCaptureRaw, createCapture, inventoryConfirm, newIdemKey, uploadCapture } from '../../api/client'
 import { enqueueOutbox } from '../../api/outbox'
 import type { CaptureConfirmEdit, CaptureResponse } from '../../api/types'
 import { useI18n } from '../../i18n'
@@ -23,7 +23,8 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
   const products = useProducts()
 
   const [phase, setPhase] = useState<Phase>('input')
-  const [text, setText] = useState('')
+  const draftKey = 'shelfloop_capture_draft_' + shopId
+  const [text, setText] = useState(() => { try { return localStorage.getItem(draftKey) ?? '' } catch { return '' } })
   const [capture, setCapture] = useState<CaptureResponse | null>(null)
   const [choices, setChoices] = useState<Choice[]>([])
   const [idemKey] = useState(() => newIdemKey())
@@ -31,10 +32,16 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  useEffect(() => {
+    try { if (text) localStorage.setItem(draftKey,text); else localStorage.removeItem(draftKey) }
+    catch { queueMicrotask(() => setError(lang === 'hi' ? 'ड्राफ्ट नहीं सहेजा जा सका। डिवाइस का स्टोरेज देखें।' : 'Draft could not be saved. Check device storage.')) }
+  }, [text,draftKey,lang])
+
   // manual fallback form
   const [mProductId, setMProductId] = useState(0)
   const [mQty, setMQty] = useState('1')
   const [mExpiry, setMExpiry] = useState('')
+  const [mCost, setMCost] = useState('')
 
   async function propose() {
     if (!text.trim()) return
@@ -49,8 +56,8 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
         setChoices(
           res.proposals.map((p) => ({
             product_id: p.product_id ?? 0,
-            qty: p.qty ?? 1,
-            unit: p.unit ?? 'pack',
+            qty: p.qty ?? 0,
+            unit: 'pack',
           })),
         )
         setPhase('review')
@@ -62,21 +69,37 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
     }
   }
 
+  async function upload(file: File) {
+    if (file.size > 8 * 1024 * 1024) { setError('Maximum file size is 8 MB.'); return }
+    setBusy(true); setError(null)
+    try {
+      const modality = file.type.startsWith('audio/') || /\.(wav|webm|ogg|mp3|m4a)$/i.test(file.name) ? 'audio' : 'invoice'
+      const res = await uploadCapture(shopId,file,modality)
+      setCapture(res)
+      if (res.status === 'failed') { setError((res.warnings ?? res.questions ?? []).join(' ')); setPhase('manual') }
+      else {
+        setChoices(res.proposals.map(p => ({ product_id:p.product_id ?? 0, qty:p.qty ?? 0, unit:'pack' })))
+        setPhase('review')
+      }
+    } catch (err) { setError(err instanceof Error ? err.message : t('common.error')) }
+    finally { setBusy(false) }
+  }
+
   function setChoice(i: number, patch: Partial<Choice>) {
     setChoices((cs) => cs.map((c, j) => (j === i ? { ...c, ...patch } : c)))
   }
 
   async function confirm() {
-    if (!capture) return
-    if (choices.some((c) => !c.product_id)) {
+    if (!capture || capture.capture_id === null) return
+    if (choices.some((c) => !c.product_id || !Number.isInteger(c.qty) || c.qty <= 0)) {
       setError(t('capture.pickProduct'))
       return
     }
     const edits: CaptureConfirmEdit[] = capture.proposals.map((p, i) => ({
       index: i,
       product_id: choices[i].product_id,
-      qty: Math.max(1, Math.floor(choices[i].qty) || 1),
-      unit: choices[i].unit || p.unit || 'pack',
+      qty: choices[i].qty,
+      unit: 'pack',
       kind: p.kind,
     }))
     setBusy(true)
@@ -85,6 +108,7 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
       const res = await confirmCaptureRaw(capture.capture_id, edits, idemKey)
       setApplied(res.applied ?? [])
       setPhase('done')
+      setText('')
       onApplied()
     } catch (err) {
       if (err instanceof TypeError) {
@@ -105,17 +129,22 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
       setError(t('capture.pickProduct'))
       return
     }
-    const qty = Math.max(1, Math.floor(Number(mQty)) || 1)
+    const qty = Number(mQty)
+    if (!Number.isInteger(qty) || qty <= 0 || (mCost && (!Number.isFinite(Number(mCost)) || Number(mCost) <= 0))) {
+      setError(lang === 'hi' ? 'सही पैक संख्या और लागत भरें।' : 'Enter a positive whole-pack quantity and a valid cost.')
+      return
+    }
     setBusy(true)
     setError(null)
     try {
       await inventoryConfirm(
         shopId,
-        [{ product_id: mProductId, qty, ...(mExpiry ? { expiry_date: mExpiry } : {}) }],
+        [{ product_id: mProductId, qty, ...(mCost ? { cost_paise: Math.round(Number(mCost)*100) } : {}), ...(mExpiry ? { expiry_date: mExpiry } : {}) }],
         'owner_manual_capture',
       )
       setApplied([{ type: 'stock_update', detail: t('capture.applied') }])
       setPhase('done')
+      setText('')
       onApplied()
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'))
@@ -138,7 +167,9 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
       {phase === 'input' && (
         <div className="space-y-3">
           <p className="text-xs text-ink/60">{t('capture.hint')}</p>
+          <p className="text-[11px] text-ink/55">{lang === 'hi' ? 'ड्राफ्ट इस डिवाइस पर रहता है। ब्राउज़र की आवाज़ सुविधा के लिए इंटरनेट लग सकता है।' : 'Drafts stay on this device. Browser speech may use an online recognition service.'}</p>
           <textarea
+            aria-label={lang === 'hi' ? 'स्टॉक का विवरण' : 'Stock description'}
             className="field min-h-[96px]"
             placeholder={t('capture.placeholder')}
             value={text}
@@ -157,6 +188,12 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
             )}
             {speech.error === 'unsupported' && <span className="text-xs text-ink/60">{t('capture.micUnsupported')}</span>}
           </div>
+          <label className="btn-ghost w-full cursor-pointer">
+            {lang === 'hi' ? 'बिल या ऑडियो फ़ाइल चुनें' : 'Choose invoice or audio file'}
+            <input type="file" className="sr-only" disabled={busy} accept=".txt,.csv,.pdf,.png,.jpg,.jpeg,.webp,.wav,.webm,.ogg,.mp3,.m4a" onChange={e => {const file=e.target.files?.[0];if(file) void upload(file);e.target.value=''}} />
+          </label>
+          <p className="text-[11px] leading-5 text-ink/55">{lang === 'hi' ? 'TXT/CSV और टेक्स्ट PDF उपलब्ध। चित्र और ऑडियो के लिए स्थानीय OCR/स्पीच मॉडल चाहिए।' : 'TXT/CSV and text PDFs supported. Images and audio require the optional local OCR/speech runtime.'}</p>
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
           <button type="button" className="btn-primary w-full" disabled={busy || !text.trim()} onClick={() => void propose()}>
             {busy ? t('capture.checking') : t('capture.check')}
           </button>
@@ -177,7 +214,7 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
                     {p.kind === 'need' ? t('capture.kind.need') : t('capture.kind.stock_update')}
                   </span>
                   <span className="tabular text-xs text-ink/60">
-                    {t('capture.confidence', { pct: Math.round((p.confidence ?? 0) * 100) })}
+                    {lang === 'hi' ? 'पुष्टि आवश्यक' : 'Review required'}
                   </span>
                 </div>
 
@@ -237,7 +274,7 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
                       className="field tabular"
                       type="number"
                       min={1}
-                      value={choices[i]?.qty ?? 1}
+                      value={choices[i]?.qty || ''}
                       onChange={(e) => setChoice(i, { qty: Number(e.target.value) })}
                     />
                   </div>
@@ -248,8 +285,7 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
                     <input
                       id={`unit-${i}`}
                       className="field"
-                      value={choices[i]?.unit ?? 'pack'}
-                      onChange={(e) => setChoice(i, { unit: e.target.value })}
+                      value={lang === 'hi' ? 'पैक' : 'packs'} readOnly
                     />
                   </div>
                 </div>
@@ -281,6 +317,8 @@ export function CaptureComposer({ shopId, onClose, onApplied }: { shopId: number
       {phase === 'manual' && (
         <div className="space-y-3">
           <p className="text-sm font-semibold text-accent">{t('capture.failed')}</p>
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+          <label className="label">{lang === 'hi' ? 'प्रति पैक लागत (₹), अगर ज्ञात हो' : 'Purchase cost per pack (₹), if known'}<input className="field mt-1" type="number" min="0.01" step="0.01" value={mCost} onChange={e => setMCost(e.target.value)} /></label>
           <div>
             <label className="label" htmlFor="manual-product">
               {t('capture.manualProduct')}

@@ -26,7 +26,7 @@ import type {
   SupplierQuote,
 } from './types'
 
-export const API_BASE: string = import.meta.env.DEV ? '/api' : 'http://localhost:8000/api'
+export const API_BASE: string = '/api'
 
 export const TOKEN_KEY = 'shelfloop_token'
 export const SESSION_KEY = 'shelfloop_session'
@@ -49,12 +49,12 @@ export class OfflineQueuedError extends Error {
 }
 
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY)
+  return sessionStorage.getItem(TOKEN_KEY)
 }
 
 export function clearToken(): void {
-  localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(SESSION_KEY)
+  sessionStorage.removeItem(TOKEN_KEY)
+  sessionStorage.removeItem(SESSION_KEY)
 }
 
 /** crypto.randomUUID needs a secure context; fall back for plain http on LAN. */
@@ -77,20 +77,15 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
   const headers: Record<string, string> = {}
   const token = getToken()
   if (token) headers.Authorization = `Bearer ${token}`
-  if (opts.body !== undefined) headers['Content-Type'] = 'application/json'
+  if (opts.body !== undefined && !(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json'
   if (opts.idemKey) headers['Idempotency-Key'] = opts.idemKey
 
-  let res: Response
-  try {
-    res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
       method: opts.method ?? 'GET',
       headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      body: opts.body instanceof FormData ? opts.body : opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
     })
-  } catch (err) {
-    // network failure — let callers decide to queue offline (TypeError from fetch)
-    throw err
-  }
+
 
   if (res.status === 401) {
     clearToken()
@@ -105,6 +100,7 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
     try {
       const j = (await res.json()) as { detail?: unknown }
       if (j && typeof j.detail === 'string') detail = j.detail
+      else if (Array.isArray(j?.detail)) detail = j.detail.map((e: { msg?: string }) => e.msg ?? 'Invalid input').join('; ')
     } catch {
       // non-JSON error body
     }
@@ -150,6 +146,18 @@ export function confirmCaptureRaw(
     idemKey,
   })
 }
+
+export function uploadCapture(shopId: number, file: File, modality: 'audio'|'invoice'): Promise<CaptureResponse> {
+  const body = new FormData()
+  body.append('shop_id', String(shopId))
+  body.append('file', file)
+  return request<CaptureResponse>('/captures/' + modality, { method:'POST', body })
+}
+
+export interface ShopPreferences { shop_id: number; version: number; cash_limit_paise: number; sharing_opt_in: boolean; held_cash_paise: number }
+export const getShopPreferences = (id: number) => request<ShopPreferences>('/shops/' + id + '/preferences')
+export const saveShopPreferences = (id: number, body: { expected_version: number; cash_limit_paise: number; sharing_opt_in: boolean }) =>
+  request<ShopPreferences>('/shops/' + id + '/preferences', { method:'PATCH', body })
 
 // ---------- inventory & needs ----------
 

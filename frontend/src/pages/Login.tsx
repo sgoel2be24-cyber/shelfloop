@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ApiError, createSession } from '../api/client'
 import type { Role, Shop } from '../api/types'
 import { Icon } from '../components/Icon'
-import { LogoMark, ShopScene } from '../components/Logo'
+import { LogoMark } from '../components/Logo'
+import { LoopIllustration } from '../components/LoopIllustration'
 import { Lang } from '../components/Lang'
 import { useI18n } from '../i18n'
 import { useShops } from '../lib/data'
@@ -76,28 +77,34 @@ export default function Login() {
   const shopName = (s: Shop) => (lang === 'hi' && s.name_hi ? s.name_hi : s.name)
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-5 py-6">
+    <div className="login-layout">
+      <section className="login-story">
+        <div className="flex items-center gap-3 text-2xl font-semibold tracking-tight"><LogoMark size={40} /> ShelfLoop</div>
+        <div className="relative z-10 py-6">
+          <div className="eyebrow mb-5 text-[#b8cda7]">{lang === 'hi' ? 'पड़ोस का व्यापार, साथ में' : 'NEIGHBOURHOOD COMMERCE, CONNECTED'}</div>
+          <h1>{lang === 'hi' ? <>रुका हुआ स्टॉक।<br /><em>नई संभावनाएँ।</em></> : <>A fresh start<br />for <em>every shelf.</em></>}</h1>
+          <p className="mt-6 max-w-sm text-sm leading-7 text-[#bdcec0]">{lang === 'hi' ? 'अपना स्टॉक समझें, ज़रूरतें पूरी करें और पड़ोस की दुकानों के साथ बेहतर योजना बनाएँ।' : 'Less stock sitting still. More possibilities next door. Make thoughtful moves with the shops around you.'}</p>
+          <div className="story-art mx-auto mt-6 max-w-md"><LoopIllustration dark /></div>
+        </div>
+        <div className="story-footer flex items-center justify-between text-xs text-[#a9c1af]"><span>Tech4Bharat · PS 5.1</span><span>Made for the neighbourhood ↗</span></div>
+      </section>
+      <div className="login-panel"><div className="login-form">
       <div className="absolute right-5 top-5">
         <Lang />
       </div>
 
-      <header className="mt-8 mb-6">
-        <div className="flex items-center gap-2.5">
-          <LogoMark size={44} />
-          <div>
-            <h1 className="text-3xl font-extrabold leading-none text-brand">ShelfLoop</h1>
-            <p className="mt-1 text-sm text-ink/60">{t('login.tagline')}</p>
-          </div>
-        </div>
-        <ShopScene className="mt-4 w-full max-w-sm" />
+      <header className="mb-8">
+        <div className="eyebrow mb-3 text-accent">{lang === 'hi' ? 'आपका कार्यक्षेत्र' : 'YOUR DAILY WORKSPACE'}</div>
+        <h2 className="text-3xl font-semibold tracking-tight text-ink">{lang === 'hi' ? 'स्वागत है।' : 'Good to have you here.'}</h2>
+        <p className="mt-3 text-sm leading-6 text-ink/60">{lang === 'hi' ? 'शुरू करने के लिए अपना कार्यक्षेत्र चुनें।' : 'Choose your workspace to get things moving.'}</p>
       </header>
 
       {!role && (
         <section>
           <h2 className="mb-3 text-lg font-bold">{t('login.pickRole')}</h2>
           <div className="grid gap-3">
-            <button type="button" className="card flex items-center gap-4 p-5 text-left transition hover:-translate-y-0.5 hover:border-brand hover:shadow-md" onClick={() => pickRole('owner')}>
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+            <button type="button" className="role-choice" onClick={() => pickRole('owner')}>
+              <span className="role-icon">
                 <Icon name="box" size={24} strokeWidth={2} />
               </span>
               <span>
@@ -106,8 +113,8 @@ export default function Login() {
               </span>
               <span className="ml-auto text-ink/30">→</span>
             </button>
-            <button type="button" className="card flex items-center gap-4 p-5 text-left transition hover:-translate-y-0.5 hover:border-brand hover:shadow-md" onClick={() => pickRole('operator')}>
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent">
+            <button type="button" className="role-choice" onClick={() => pickRole('operator')}>
+              <span className="role-icon">
                 <Icon name="ledger" size={24} strokeWidth={2} />
               </span>
               <span>
@@ -199,7 +206,7 @@ export default function Login() {
 
       {role && (
         <div className="mt-5 space-y-3">
-          {error && <p className="text-sm font-semibold text-red-600">{error}</p>}
+          {error && <p role="alert" className="text-sm font-semibold text-red-600">{error}</p>}
           <button type="button" className="btn-accent w-full" disabled={busy} onClick={() => void signIn()}>
             {busy ? t('common.loading') : t('login.signIn')}
           </button>
@@ -209,9 +216,10 @@ export default function Login() {
           <p className="text-center text-xs text-ink/50">{t('login.pinHint')}</p>
         </div>
       )}
-      <footer className="mt-10 text-center text-[11px] text-ink/40">
+      <footer className="mt-8 border-t border-ink/10 pt-5 text-[11px] leading-5 text-ink/55">
         {t('login.footer')}
       </footer>
+      </div></div>
     </div>
   )
 }

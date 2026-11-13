@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Icon, type IconName } from './Icon'
 
 /** KPI tile with icon, value, trend line and an optional accent tone. */
 export function StatCard({
@@ -21,15 +22,15 @@ export function StatCard({
     good: 'border-green-300 bg-green-50',
   }
   return (
-    <div className={`card p-4 transition-transform hover:-translate-y-0.5 hover:shadow-md ${tones[tone]}`}>
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink/50">
-        <span className="text-base" aria-hidden>
-          {icon}
-        </span>
+    <div className={`metric-card ${tones[tone]}`}>
+      <div className="flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-wider text-ink/60">
         {label}
+        <span className="metric-icon" aria-hidden>
+          {['home', 'box', 'clock', 'ledger'].includes(icon) ? <Icon name={icon as IconName} size={16} /> : icon}
+        </span>
       </div>
-      <div className="mt-1 text-2xl font-extrabold tabular text-ink">{value}</div>
-      {sub && <div className="mt-0.5 text-xs text-ink/60">{sub}</div>}
+      <div className="metric-value tabular">{value}</div>
+      {sub && <div className="mt-2 text-[11px] text-ink/55">{sub}</div>}
     </div>
   )
 }
@@ -56,7 +57,7 @@ export function BarList({
           <div className="h-4 flex-1 overflow-hidden rounded-full bg-ink/5">
             <div
               className="h-full rounded-full transition-all"
-              style={{ width: `${(100 * it.value) / max}%`, background: it.color ?? '#2E3192' }}
+              style={{ width: `${(100 * it.value) / max}%`, background: it.color ?? '#799A69' }}
             />
           </div>
           <span className="w-20 shrink-0 text-right text-xs font-bold tabular text-ink/70">

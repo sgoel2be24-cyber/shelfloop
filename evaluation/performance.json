@@ -1,0 +1,67 @@
+{
+  "fixture_seed": 2026,
+  "repeats": 3,
+  "baseline": "git HEAD solver source, same retained graphs; original correctness defects remain",
+  "results": [
+    {
+      "shops": 5,
+      "catalogue_products": 100,
+      "lots": 75,
+      "needs": 15,
+      "candidate_cycles": 29,
+      "enumeration_ms": 0.67,
+      "before_median_ms": 46.07,
+      "before_statuses": [
+        "OPTIMAL",
+        "OPTIMAL",
+        "OPTIMAL"
+      ],
+      "after_median_ms": 53.81,
+      "after_statuses": [
+        "OPTIMAL",
+        "OPTIMAL",
+        "OPTIMAL"
+      ]
+    },
+    {
+      "shops": 10,
+      "catalogue_products": 100,
+      "lots": 150,
+      "needs": 30,
+      "candidate_cycles": 46,
+      "enumeration_ms": 1.34,
+      "before_median_ms": 46.91,
+      "before_statuses": [
+        "OPTIMAL",
+        "OPTIMAL",
+        "OPTIMAL"
+      ],
+      "after_median_ms": 106.46,
+      "after_statuses": [
+        "OPTIMAL",
+        "OPTIMAL",
+        "OPTIMAL"
+      ]
+    },
+    {
+      "shops": 25,
+      "catalogue_products": 100,
+      "lots": 375,
+      "needs": 75,
+      "candidate_cycles": 450,
+      "enumeration_ms": 15.55,
+      "before_median_ms": 704.22,
+      "before_statuses": [
+        "OPTIMAL",
+        "OPTIMAL",
+        "OPTIMAL"
+      ],
+      "after_median_ms": 2384.03,
+      "after_statuses": [
+        "OPTIMAL",
+        "OPTIMAL",
+        "OPTIMAL"
+      ]
+    }
+  ]
+}

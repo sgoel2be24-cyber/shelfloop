@@ -250,7 +250,7 @@ def seed(db_path=None, force=False) -> bool:
             conn.execute("DELETE FROM audit_events"); conn.execute("DELETE FROM inventory_log")
             conn.execute("DELETE FROM sessions"); conn.execute("DELETE FROM idempotency")
             conn.execute("DELETE FROM sandbox_actions"); conn.execute("DELETE FROM approvals")
-            conn.execute("DELETE FROM reservations"); conn.execute("DELETE FROM plans")
+            conn.execute("DELETE FROM reservations"); conn.execute("DELETE FROM cash_reservations"); conn.execute("DELETE FROM plans")
             conn.execute("DELETE FROM planning_runs"); conn.execute("DELETE FROM captures")
             conn.execute("DELETE FROM supplier_quotes"); conn.execute("DELETE FROM needs")
             conn.execute("DELETE FROM stock_lots"); conn.execute("DELETE FROM aliases")
@@ -265,7 +265,7 @@ def seed(db_path=None, force=False) -> bool:
                      rng.randrange(15, 45) * 10000, 1 if rng.random() < 0.85 else 0))
             # shops 1-3 sit close together so the demo cluster is walkable
             for sid, (dlat, dlng) in {1: (0.000, 0.000), 2: (0.004, 0.003), 3: (-0.003, 0.005)}.items():
-                conn.execute("UPDATE shops SET lat=?, lng=? WHERE id=?",
+                conn.execute("UPDATE shops SET lat=?, lng=?, sharing_opt_in=1 WHERE id=?",
                              (base_lat + dlat, base_lng + dlng, sid))
 
             for row in products:
@@ -278,6 +278,10 @@ def seed(db_path=None, force=False) -> bool:
 
             product_ids = {p[2]: p[0] for p in products}
             _demo_trio(conn, product_ids)
+            # Explicit fictional date observations for the hero exchange lots.
+            conn.execute("UPDATE stock_lots SET expiry_date=? WHERE shop_id IN (1,2,3)",
+                         ((date.today() + timedelta(days=90)).isoformat(),))
+
 
             names = [p[2] for p in products]
             for shop in range(4, 26):

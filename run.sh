@@ -10,12 +10,13 @@ fi
 if [ ! -x "backend/.venv/bin/python" ] && [ ! -x "backend/.venv/Scripts/python.exe" ]; then
   echo "[shelfloop] creating virtual environment..."
   python3 -m venv backend/.venv
-  backend/.venv/bin/python -m pip install --quiet -r backend/requirements.txt
 fi
 
 PY="backend/.venv/bin/python"
 [ -x "$PY" ] || PY="backend/.venv/Scripts/python.exe"
 
+"$PY" -m pip install --quiet -r backend/requirements.txt
+
 echo "[shelfloop] starting server on http://127.0.0.1:8000"
 echo "  operator PIN 0000 - shop owner PIN 1234"
-"$PY" -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --app-dir backend
+"$PY" -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend

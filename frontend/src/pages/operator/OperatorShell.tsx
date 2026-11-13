@@ -1,6 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { getPlanStatus } from '../../api/client'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { getPlan, getPlanStatus } from '../../api/client'
 import type { Plan, PlanStatusResponse, RunParams } from '../../api/types'
 import { Icon, type IconName } from '../../components/Icon'
 import { LogoMark } from '../../components/Logo'
@@ -10,6 +10,7 @@ import type { TKey } from '../../i18n'
 import { useSession } from '../../state/Session'
 
 export const DEFAULT_RUN_PARAMS: RunParams = {
+  shop_ids: [1, 2, 3],
   time_limit_ms: 5000,
   min_shelf_days: 14,
   radius_km: 3.0,
@@ -48,9 +49,11 @@ const NAV: { to: string; icon: IconName; key: TKey }[] = [
 
 /** Operator workspace: sidebar nav on desktop, top nav on mobile, shared plan state. */
 export default function OperatorShell() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const { logout } = useSession()
   const navigate = useNavigate()
+  const location = useLocation()
+  const page = NAV.find((item) => item.to === location.pathname) ?? NAV[0]
 
   const [plan, setPlanState] = useState<Plan | null>(null)
   const [status, setStatus] = useState<PlanStatusResponse | null>(null)
@@ -61,6 +64,8 @@ export default function OperatorShell() {
   const setPlan = useCallback((p: Plan | null) => {
     planIdRef.current = p?.id ?? null
     setPlanState(p)
+    if (p) sessionStorage.setItem('shelfloop_active_plan',String(p.id))
+    else sessionStorage.removeItem('shelfloop_active_plan')
     setStatus(null)
   }, [])
 
@@ -73,6 +78,14 @@ export default function OperatorShell() {
       // keep previous status; the page surfaces errors elsewhere
     }
   }, [])
+
+  useEffect(() => {
+    const id=Number(sessionStorage.getItem('shelfloop_active_plan'))
+    if (!id) return
+    let alive=true
+    getPlan(id).then(p => {if(alive) {setPlan(p);void refreshStatus(p.id)}}).catch(() => sessionStorage.removeItem('shelfloop_active_plan'))
+    return () => {alive=false}
+  }, [setPlan,refreshStatus])
 
   const setLastParams = useCallback((p: RunParams) => setLastParamsState(p), [])
   const requestReplan = useCallback(() => setReplanTick((x) => x + 1), [])
@@ -90,7 +103,7 @@ export default function OperatorShell() {
       end={item.to === '/operator'}
       className={({ isActive }) =>
         `sidebar-link flex min-h-[48px] items-center gap-3 px-3 text-sm font-semibold transition-colors ${
-          isActive ? 'bg-brand text-white' : 'text-ink/70 hover:bg-ivory'
+          isActive ? 'active' : ''
         }`
       }
     >
@@ -101,77 +114,38 @@ export default function OperatorShell() {
 
   return (
     <OperatorContext.Provider value={value}>
-      <div className="flex min-h-screen">
-        {/* sidebar (desktop) */}
-        <aside className="hidden w-60 shrink-0 flex-col border-r border-ink/10 bg-white p-3 md:flex">
-          <div className="mb-4 flex items-center gap-2 px-2">
-            <LogoMark size={34} />
-            <div>
-              <div className="text-lg font-extrabold leading-tight text-brand">ShelfLoop</div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-accent">{t('role.operator')}</div>
-            </div>
+      <div className="workspace">
+        <aside className="workspace-sidebar">
+          <div className="workspace-brand"><LogoMark size={38} /><div>ShelfLoop<small>{lang === 'hi' ? 'पड़ोस का नेटवर्क' : 'THE NEIGHBOURHOOD NETWORK'}</small></div></div>
+          <div className="sidebar-caption">{lang === 'hi' ? 'कार्यक्षेत्र' : 'WORKSPACE'}</div>
+          <nav aria-label={t('role.operator')}>{navLinks}</nav>
+          <div className="sidebar-note">
+            <Icon name="graph" size={23} className="mb-3 text-[#d7e8b2]" />
+            <div className="text-sm font-semibold text-[#e9f2df]">{lang === 'hi' ? 'एक साथ, बेहतर व्यापार।' : 'Good neighbours. Better trade.'}</div>
+            <p className="mt-2">{lang === 'hi' ? 'सही स्टॉक को सही दुकान तक पहुँचाने की योजना बनाएँ।' : 'Connect what one shop has with what another shop needs.'}</p>
           </div>
-          <nav className="flex flex-1 flex-col gap-1" aria-label={t('role.operator')}>
-            {navLinks}
-          </nav>
-          <div className="mt-4 flex flex-col gap-2 border-t border-ink/10 pt-3">
-            <Lang />
-            <button
-              type="button"
-              className="btn-ghost min-h-[40px] justify-start text-sm"
-              onClick={() => {
-                logout()
-                navigate('/login', { replace: true })
-              }}
-            >
-              <Icon name="logout" size={17} /> {t('common.logout')}
-            </button>
+          <div className="workspace-footer">
+            <div className="workspace-avatar">OP</div>
+            <div className="min-w-0 flex-1"><div className="text-xs font-semibold">{t('role.operator')}</div><div className="mt-1 text-[10px] text-[#a9bfb0]">{lang === 'hi' ? 'क्लस्टर कार्यक्षेत्र' : 'Cluster workspace'}</div></div>
+            <button type="button" aria-label={t('common.logout')} className="rounded-lg p-2 hover:bg-white/10" onClick={() => { logout(); navigate('/login', { replace: true }) }}><Icon name="logout" size={18} /></button>
           </div>
         </aside>
-
-        <div className="min-w-0 flex-1">
-          {/* mobile top nav */}
-          <div className="sticky top-0 z-20 border-b border-ink/10 bg-ivory/95 backdrop-blur md:hidden">
-            <div className="flex items-center justify-between gap-2 px-3 py-2">
-              <div className="flex items-center gap-1.5 text-base font-extrabold text-brand">
-                <LogoMark size={24} /> ShelfLoop
-              </div>
-              <div className="flex items-center gap-2">
-                <Lang />
-                <button
-                  type="button"
-                  className="btn-ghost min-h-[40px] px-3 text-sm"
-                  onClick={() => {
-                    logout()
-                    navigate('/login', { replace: true })
-                  }}
-                >
-                  {t('common.logout')}
-                </button>
-              </div>
+        <div className="min-w-0">
+          <header className="workspace-topbar">
+            <div className="flex items-center gap-2.5 text-xs text-ink/55">
+              <span className="hidden sm:inline">{lang === 'hi' ? 'कार्यक्षेत्र' : 'Workspace'}</span><span className="hidden text-ink/25 sm:inline">/</span>
+              <span className="font-semibold text-ink">{t(page.key)}</span>
             </div>
-            <nav className="flex gap-1 overflow-x-auto px-3 pb-2" aria-label={t('role.operator')}>
-              {NAV.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === '/operator'}
-                  className={({ isActive }) =>
-                    `flex min-h-[48px] shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-semibold ${
-                      isActive ? 'bg-brand text-white' : 'bg-white text-ink/70'
-                    }`
-                  }
-                >
-                  <span aria-hidden>{item.icon}</span>
-                  {t(item.key)}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-
-          <main className="mx-auto max-w-4xl p-4 md:p-6">
-            <Outlet />
-          </main>
+            <div className="flex items-center gap-3">
+              <span className="mode-pill hidden sm:inline-flex"><span className="status-dot" />{lang === 'hi' ? 'सिंथेटिक डेमो' : 'Synthetic demo'}</span>
+              <Lang />
+              <button type="button" className="rounded-lg p-2 md:hidden" aria-label={t('common.logout')} onClick={() => { logout(); navigate('/login', { replace: true }) }}><Icon name="logout" size={18} /></button>
+            </div>
+          </header>
+          <nav className="flex gap-1 overflow-x-auto border-b border-ink/10 bg-white px-4 py-2 md:hidden" aria-label={t('role.operator')}>
+            {NAV.map(item => <NavLink key={item.to} to={item.to} end={item.to === '/operator'} className={({ isActive }) => 'flex min-h-[44px] shrink-0 items-center gap-2 rounded-lg px-3 text-xs font-semibold ' + (isActive ? 'bg-brand text-white' : 'text-ink/65')}><Icon name={item.icon} size={16} />{t(item.key)}</NavLink>)}
+          </nav>
+          <main className="workspace-content" id="main-content"><Outlet /></main>
         </div>
       </div>
     </OperatorContext.Provider>

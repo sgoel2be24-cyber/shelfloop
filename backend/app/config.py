@@ -1,10 +1,11 @@
 """ShelfLoop configuration. All money is integer paise (₹1 = 100 paise)."""
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent          # backend/
 ROOT_DIR = BASE_DIR.parent                                  # shelfloop/
 DATA_DIR = ROOT_DIR / "data"
-DB_PATH = DATA_DIR / "shelfloop.db"
+DB_PATH = Path(os.environ.get("SHELFLOOP_DB_PATH", DATA_DIR / "shelfloop.db"))
 FRONTEND_DIST = ROOT_DIR / "frontend" / "dist"
 
 CASE_ID = "cluster-main"

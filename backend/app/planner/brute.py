@@ -1,98 +1,64 @@
-"""Exhaustive reference solver for small cases. Same objective and constraints as
-solve.py, evaluated by brute force. Used by tests to check CP-SAT optimality claims."""
+"""Independent exhaustive reference for bounded, small planning instances."""
 from itertools import product
 
+from ..config import URGENCY_WEIGHTS
 from .graph import available_qty
-from .solve import _balancing_per_pack, _shops_in, _transport_paise
+from .solve import _purchase_options, _shops_in, cycle_cash_out
 
 
-def brute_force(cycles, ctx, max_packs_per_need: int = 6):
+def brute_force(cycles, ctx, max_packs_per_need: int = 6, allow_purchases=True):
     needs = {n["id"]: n for n in ctx["needs"]}
-    buy_options = {}
-    for n in ctx["needs"]:
-        for p in [n["product_id"]] + n["alts"]:
-            if p in ctx["quotes"]:
-                buy_options.setdefault(n["id"], []).append((p, ctx["quotes"][p]))
+    if any(n["qty"] > max_packs_per_need for n in needs.values()):
+        raise ValueError("exhaustive reference only accepts small need quantities")
+    if len(cycles) > 12:
+        raise ValueError("exhaustive reference only accepts at most 12 cycle candidates")
+    spaces = []
+    for need in ctx["needs"]:
+        choices = [(need["id"], None, 0, 0)]
+        for pid, price, minimum in _purchase_options(ctx, need, allow_purchases):
+            choices.extend((need["id"], pid, qty, price)
+                           for qty in range(minimum, need["qty"] + 1))
+        spaces.append(choices)
 
-    best = None
-    n = len(cycles)
-    buy_spaces = [[(nid, p, q) for (p, _price) in opts
-                   for q in range(0, min(needs[nid]["qty"], max_packs_per_need) + 1)]
-                  for nid, opts in buy_options.items()]
+    best, best_vector = None, None
+    for quantities in product(*(range(c.max_qty + 1) for c in cycles)):
+        used_shops, cycle_coverage, cycle_cash, valid = set(), {}, {}, True
+        slow = burden = 0
+        for cycle, qty in zip(cycles, quantities):
+            if not qty:
+                continue
+            shops = _shops_in(cycle)
+            if used_shops & shops:
+                valid = False
+                break
+            used_shops.update(shops)
+            for leg in cycle.legs:
+                if qty > available_qty(ctx, leg.giver, leg.product_id, leg.min_shelf_days):
+                    valid = False
+                cycle_coverage[leg.need_id] = cycle_coverage.get(leg.need_id, 0) + qty
+                slow += qty if leg.slow else 0
+            for shop, outlay in cycle_cash_out(cycle, qty).items():
+                cycle_cash[shop] = cycle_cash.get(shop, 0) + outlay
+            burden += int(round(sum(e.dist_km for e in cycle.legs) * 1000)) * qty
+        if not valid:
+            continue
 
-    for mask in range(1 << n):
-        chosen = [cycles[i] for i in range(n) if mask >> i & 1]
-        for combo in product(*[range(1, c.max_qty + 1) for c in chosen]) if chosen else [()]:
-            supply, shop_cycles = {}, {}
-            ok = True
-            for c, q in zip(chosen, combo):
-                for s in _shops_in(c):
-                    shop_cycles[s] = shop_cycles.get(s, 0) + 1
-                    if shop_cycles[s] > 1:
-                        ok = False
-                for e in c.legs:
-                    supply[(e.giver, e.product_id, e.min_shelf_days)] = \
-                        supply.get((e.giver, e.product_id, e.min_shelf_days), 0) + q
-            if not ok:
+        for buys in product(*spaces):
+            cash, coverage = dict(cycle_cash), dict(cycle_coverage)
+            for nid, pid, qty, price in buys:
+                coverage[nid] = coverage.get(nid, 0) + qty
+                shop = needs[nid]["shop_id"]
+                cash[shop] = cash.get(shop, 0) + qty * price
+            if any(v > ctx["shops"][s]["cash_limit_paise"] for s, v in cash.items()):
                 continue
-            for (g, p, ms), q in supply.items():
-                if q > available_qty(ctx, g, p, ms):
-                    ok = False
-                    break
-            if not ok:
+            if any(v > needs[nid]["qty"] for nid, v in coverage.items()):
                 continue
-            for combo_buys in product(*buy_spaces) if buy_spaces else [()]:
-                cash = {}
-                valid = True
-                cov = {nid: 0 for nid in needs}
-                for c, q in zip(chosen, combo):
-                    for s in _shops_in(c):
-                        cash[s] = cash.get(s, 0) + _balancing_per_pack(c, s) * q \
-                            + _transport_paise(c) * q // len(_shops_in(c))
-                    for e in c.legs:
-                        cov[e.need_id] += q
-                for (nid, pid, q) in combo_buys:
-                    shop = needs[nid]["shop_id"]
-                    cash[shop] = cash.get(shop, 0) + q * ctx["quotes"][pid]
-                    cov[nid] += q
-                for s, v in cash.items():
-                    if v > ctx["shops"][s]["cash_limit_paise"]:
-                        valid = False
-                        break
-                if not valid:
-                    continue
-                for nid, got in cov.items():
-                    if got > needs[nid]["qty"]:
-                        valid = False
-                        break
-                if not valid:
-                    continue
-                obj = objective(ctx, needs, chosen, combo, combo_buys, buy_options)
-                if best is None or obj > best["objective"]:
-                    best = {"objective": obj, "cycles": [(c, q) for c, q in zip(chosen, combo)],
-                            "buy": [(nid, pid, q) for nid, pid, q in combo_buys if q]}
+            weighted = sum(coverage.get(nid, 0) * URGENCY_WEIGHTS.get(n["urgency"], 1)
+                           for nid, n in needs.items())
+            vector = (weighted, -sum(cash.values()), slow, -burden)
+            if best_vector is None or vector > best_vector:
+                best_vector = vector
+                best = {"objective": weighted, "objective_vector": list(vector),
+                        "cycles": [(c, q) for c, q in zip(cycles, quantities) if q],
+                        "buy": [(nid, pid, q) for nid, pid, q, price in buys if q]}
     return best
-
-
-def pid_price(ctx, need_id, product_id):
-    return ctx["quotes"][product_id]
-
-
-def objective(ctx, needs, chosen, combo, combo_buys, buy_options):
-    from ..config import COVERAGE_WEIGHT, SLOW_REDEPLOY_BONUS_PAISE, URGENCY_WEIGHTS
-    cov = {nid: 0 for nid in needs}
-    cash = 0
-    slow = 0
-    for c, q in zip(chosen, combo):
-        for e in c.legs:
-            cov[e.need_id] += q
-            if e.slow:
-                slow += q
-        cash += _transport_paise(c) * q
-    for (nid, pid, q) in combo_buys:
-        cov[nid] += q
-        cash += ctx["quotes"][pid] * q
-    obj = sum(COVERAGE_WEIGHT * URGENCY_WEIGHTS.get(needs[nid]["urgency"], 1) * min(v, needs[nid]["qty"])
-              for nid, v in cov.items())
-    obj += SLOW_REDEPLOY_BONUS_PAISE * slow - cash
-    return obj

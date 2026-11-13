@@ -7,6 +7,7 @@ import { useAsyncData } from '../../lib/useAsyncData'
 import { useSession } from '../../state/Session'
 import { useToast } from '../../state/Toast'
 import { Money } from '../../components/Money'
+import { BudgetControl } from '../../components/BudgetControl'
 
 function matches(p: Product, q: string): boolean {
   const s = q.trim().toLowerCase()
@@ -150,6 +151,7 @@ export default function Needs() {
 
   return (
     <div className="space-y-4">
+      <BudgetControl shopId={shopId} />
       <header>
         <h1 className="text-2xl font-extrabold text-brand">{t('needs.title')}</h1>
         <p className="text-sm text-ink/60">{t('needs.subtitle')}</p>

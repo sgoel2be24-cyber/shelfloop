@@ -1,11 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import '@fontsource/baloo-2/400.css'
-import '@fontsource/baloo-2/500.css'
-import '@fontsource/baloo-2/600.css'
-import '@fontsource/baloo-2/700.css'
-import '@fontsource/baloo-2/800.css'
 import '@fontsource/baloo-2/devanagari-400.css'
 import '@fontsource/baloo-2/devanagari-600.css'
 import '@fontsource/baloo-2/devanagari-700.css'
@@ -15,10 +10,11 @@ import { flushOutbox } from './api/outbox'
 import { I18nProvider } from './i18n'
 import { SessionProvider } from './state/Session'
 import { ToastProvider } from './state/Toast'
+import { AppErrorBoundary } from './components/AppErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <I18nProvider>
+    <AppErrorBoundary><I18nProvider>
       <SessionProvider>
         <ToastProvider>
           <BrowserRouter>
@@ -26,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
           </BrowserRouter>
         </ToastProvider>
       </SessionProvider>
-    </I18nProvider>
+    </I18nProvider></AppErrorBoundary>
   </StrictMode>,
 )
 

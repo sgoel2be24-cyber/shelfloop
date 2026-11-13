@@ -32,6 +32,7 @@ export interface Shop {
   cash_limit_paise: number
   sharing_opt_in: boolean
   withdrawn: boolean
+  version: number
 }
 
 export interface Product {
@@ -117,7 +118,10 @@ export interface CaptureProposal {
 }
 
 export interface CaptureResponse {
-  capture_id: number
+  capture_id: number | null
+  warnings?: string[]
+  questions?: string[]
+  fallback?: string
   status: CaptureStatus
   proposals: CaptureProposal[]
   engine: string
@@ -146,6 +150,8 @@ export interface InventoryChange {
   permit_share?: boolean
   slow?: boolean
   retained_floor?: number
+  expected_version?: number
+  cost_paise?: number
 }
 
 export interface InventoryConfirmResponse {
@@ -156,6 +162,7 @@ export interface InventoryConfirmResponse {
 // ---------- planning ----------
 
 export interface RunParams {
+  shop_ids?: number[]
   time_limit_ms?: number
   min_shelf_days?: number
   radius_km?: number
@@ -216,6 +223,7 @@ export interface PlanCycle {
   legs: PlanLeg[]
   balancing_paise_by_shop: Record<string, number>
   transport_paise: number
+  transport_by_shop_paise?: Record<string, number>
   transport_per_shop_paise: number
   slow_packs_redeployed: number
 }

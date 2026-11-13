@@ -1,17 +1,18 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
-import { ApiError, approvePlan, getExpiryActions, getNeeds, getPlanStatus, getShopPulse, rejectPlan } from '../../api/client'
+import { getExpiryActions, getNeeds, getPlanStatus, getShopPulse } from '../../api/client'
 import { fetchOwnerPlans, pickLatestPlan } from '../../api/discovery'
 import type { Need, Plan } from '../../api/types'
 import { Countdown, formatMsLeft, useNow } from '../../components/Countdown'
 import { Icon } from '../../components/Icon'
+import { StatusChip } from '../../components/StatusChip'
 import { useI18n } from '../../i18n'
 import { fetchShops, shopLabel, useProducts } from '../../lib/data'
 import { formatMoney } from '../../lib/format'
 import { speak } from '../../lib/speech'
 import { useAsyncData } from '../../lib/useAsyncData'
 import { useSession } from '../../state/Session'
-import { useToast } from '../../state/Toast'
 
 // ---------------------------------------------------------------------------
 // Action-card derivation: facts come from the plan receipt; all wording is
@@ -65,7 +66,7 @@ function buildCards(plan: Plan | null, myId: number, shopsName: (id: number) => 
           legs: [],
           counterparty: shopsName(other),
           totalQty: 0,
-          unit: leg.unit,
+          unit: 'pack',
           firstProduct: leg.product_name,
           balancingPaise: null,
           transportPerShopPaise: null,
@@ -76,7 +77,7 @@ function buildCards(plan: Plan | null, myId: number, shopsName: (id: number) => 
         }
         groups.set(gkey, g)
       }
-      g.legs.push({ qty: leg.qty, unit: leg.unit, product: leg.product_name, valuePaise: leg.value_paise, incoming })
+      g.legs.push({ qty: leg.qty, unit: 'pack', product: leg.product_name, valuePaise: leg.value_paise, incoming })
       g.totalQty += leg.qty
       g.emoji = g.legs.length > 1 ? '🔀' : leg.emoji
       if (leg.shelf_days != null) {
@@ -85,7 +86,7 @@ function buildCards(plan: Plan | null, myId: number, shopsName: (id: number) => 
       const myBal = cycle.balancing_paise_by_shop?.[String(myId)]
       if (typeof myBal === 'number') {
         g.balancingPaise = myBal
-        g.transportPerShopPaise = cycle.transport_per_shop_paise ?? null
+        g.transportPerShopPaise = cycle.transport_by_shop_paise?.[String(myId)] ?? cycle.transport_per_shop_paise ?? null
       }
       if (incoming) {
         const cov = (plan.coverage ?? []).find((c) => c.shop_id === myId && c.product_id === leg.product_id)
@@ -150,7 +151,6 @@ const KIND_ORDER: Record<CardData['kind'], number> = { receive: 0, give: 1, purc
 export default function Today() {
   const { t, lang } = useI18n()
   const { session } = useSession()
-  const { push } = useToast()
   const products = useProducts()
   const { data: shops } = useAsyncData(() => fetchShops(), [])
   const { data: plans, error, loading, reload } = useAsyncData(
@@ -170,12 +170,11 @@ export default function Today() {
     [plan?.id],
   )
 
-  const [busyKey, setBusyKey] = useState<string | null>(null)
-
   const shopsName = (id: number) => shopLabel(shops?.find((s) => s.id === id), id, lang)
   const productEmoji = (productId: number) => products?.find((p) => p.id === productId)?.emoji ?? null
 
   const cards = useMemo(() => {
+    if (plan?.status === 'COMPLETED') return []
     const list = [...buildCards(plan, session!.shopId!, shopsName, productEmoji), ...uncoveredCards(plan, needs ?? [], productEmoji)]
     return list.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind]).slice(0, 3)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -191,47 +190,35 @@ export default function Today() {
     return new Date(Math.min(...times)).toISOString()
   }, [planStatus])
 
-  async function doApprove(cardKey: string) {
-    if (!plan) return
-    setBusyKey(cardKey)
-    try {
-      await approvePlan(plan.id)
-      push(t('toast.approved'))
-      reload()
-    } catch (err) {
-      handleDecisionError(err)
-    } finally {
-      setBusyKey(null)
-    }
-  }
-
-  async function doReject(cardKey: string, reason: string) {
-    if (!plan) return
-    setBusyKey(cardKey)
-    try {
-      await rejectPlan(plan.id, reason)
-      push(t('toast.rejected'))
-      reload()
-    } catch (err) {
-      handleDecisionError(err)
-    } finally {
-      setBusyKey(null)
-    }
-  }
-
-  function handleDecisionError(err: unknown) {
-    if (err instanceof ApiError && err.status === 403) push(t('toast.forbidden'), 'err')
-    else if (err instanceof ApiError && err.status === 409) push(t('toast.conflict'), 'err')
-    else if (err instanceof TypeError) push(t('toast.network'), 'err')
-    else push(err instanceof Error ? err.message : t('common.error'), 'err')
-  }
-
   return (
     <div className="space-y-4">
       <Greeting ownerName={ownerName} />
       <PulseStrip shopId={shopId} />
 
       <ExpiryStrip shopId={shopId} />
+
+      {plan && (
+        <section className="card space-y-3 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-bold">{lang === 'hi' ? 'पूरा प्लान' : 'Complete plan'} #{plan.id}</h2>
+            <StatusChip status={String(plan.status)} />
+          </div>
+          <p className="text-sm text-ink/70">
+            {plan.status === 'COMPLETED'
+              ? (lang === 'hi' ? 'सिमुलेशन में आपका कुल नकद: ' : 'Your total cash in this simulation: ')
+              : (lang === 'hi' ? 'आपके लिए कुल नकद ज़रूरी: ' : 'Total cash you need ready: ')}
+            <strong className="tabular text-ink">{formatMoney(plan.costs.cash_out_by_shop?.[String(shopId)] ?? 0, lang)}</strong>
+          </p>
+          <p className="text-xs text-ink/60">{plan.status === 'COMPLETED'
+            ? (lang === 'hi' ? 'सिमुलेशन पूरा हुआ। स्टॉक और ज़रूरतें अपडेट हो गई हैं। कोई असली भुगतान या डिलीवरी नहीं हुई।' : 'Simulation complete. Stock and needs have been updated. No real payment or delivery occurred.')
+            : lang === 'hi'
+            ? 'नीचे की सभी अदला-बदली और खरीद एक ही प्लान का हिस्सा हैं। मंज़ूरी पूरे प्लान के लिए होगी।'
+            : 'Every exchange and purchase below belongs to one plan. Approval applies to the complete plan.'}</p>
+          {plan.status === 'AWAITING_APPROVAL' && (planStatus?.approvals_missing ?? []).includes(shopId) && (
+            <Link className="btn-primary" to="/approvals">{lang === 'hi' ? 'पूरा प्लान देखें और निर्णय लें' : 'Review complete plan & decide'}</Link>
+          )}
+        </section>
+      )}
 
       {plan && String(plan.status) === 'NEEDS_OPERATOR' && (
         <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700">
@@ -255,7 +242,7 @@ export default function Today() {
           </button>
         </div>
       )}
-      {!loading && !error && cards.length === 0 && (
+      {!loading && !error && cards.length === 0 && !plan && (
         <div className="card p-5 text-sm text-ink/70">{t('today.noPlan')}</div>
       )}
 
@@ -264,9 +251,6 @@ export default function Today() {
           key={card.key}
           card={card}
           expiresAt={expiresAt}
-          busy={busyKey === card.key}
-          onApprove={() => void doApprove(card.key)}
-          onReject={(reason) => void doReject(card.key, reason)}
         />
       ))}
     </div>
@@ -300,31 +284,22 @@ function QA({ icon, question, children }: QAProps) {
 function ActionCard({
   card,
   expiresAt,
-  busy,
-  onApprove,
-  onReject,
 }: {
   card: CardData
   expiresAt: string | null
-  busy: boolean
-  onApprove: () => void
-  onReject: (reason: string) => void
 }) {
   const { t, lang } = useI18n()
   const m = (paise: number) => formatMoney(paise, lang)
   const now = useNow(1000)
 
-  const [rejecting, setRejecting] = useState(false)
-  const [reason, setReason] = useState('')
-
   // ---- answers to the five questions (data-driven, bilingual templates) ----
   const title =
     card.kind === 'receive'
-      ? t('today.cardReceive', { qty: card.totalQty, unit: card.unit, product: card.firstProduct, shop: card.counterparty ?? '' })
+      ? t('today.cardReceive', { qty: card.totalQty, unit: t('common.packs'), product: card.firstProduct, shop: card.counterparty ?? '' })
       : card.kind === 'give'
-        ? t('today.cardGive', { qty: card.totalQty, unit: card.unit, product: card.firstProduct, shop: card.counterparty ?? '' })
+        ? t('today.cardGive', { qty: card.totalQty, unit: t('common.packs'), product: card.firstProduct, shop: card.counterparty ?? '' })
         : card.kind === 'purchase'
-          ? t('today.cardPurchase', { qty: card.totalQty, unit: card.unit, product: card.firstProduct, amount: m(card.purchaseTotalPaise ?? 0) })
+          ? t('today.cardPurchase', { qty: card.totalQty, unit: t('common.packs'), product: card.firstProduct, amount: m(card.purchaseTotalPaise ?? 0) })
           : t('today.cardUncovered', { product: card.firstProduct })
 
   let why: string
@@ -457,48 +432,11 @@ function ActionCard({
         </QA>
       </div>
 
-      {rejecting ? (
-        <div className="mt-3 space-y-2 border-t border-dashed border-ink/15 pt-3">
-          <label className="label" htmlFor={`reason-${card.key}`}>
-            {t('today.rejectReason')}
-          </label>
-          <input
-            id={`reason-${card.key}`}
-            className="field"
-            value={reason}
-            placeholder={t('today.rejectPlaceholder')}
-            onChange={(e) => setReason(e.target.value)}
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className="btn-danger flex-1"
-              disabled={busy || !reason.trim()}
-              onClick={() => {
-                onReject(reason.trim())
-                setRejecting(false)
-              }}
-            >
-              {t('today.send')}
-            </button>
-            <button type="button" className="btn-ghost flex-1" onClick={() => setRejecting(false)}>
-              {t('common.cancel')}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-3 flex flex-wrap gap-2 border-t border-dashed border-ink/15 pt-3">
-          <button type="button" className="btn-accent flex-1" disabled={busy} onClick={onApprove}>
-            {t('today.approve')}
-          </button>
-          <button type="button" className="btn-ghost flex-1" disabled={busy} onClick={() => setRejecting(true)}>
-            {t('today.reject')}
-          </button>
-          <button type="button" className="btn-ghost" disabled={busy} onClick={() => hear('details')}>
-            🔊 {t('today.hearDetails')}
-          </button>
-        </div>
-      )}
+      <div className="mt-3 border-t border-ink/10 pt-3">
+        <button type="button" className="btn-ghost" onClick={() => hear('details')}>
+          {t('today.hearDetails')}
+        </button>
+      </div>
     </article>
   )
 }
@@ -572,9 +510,10 @@ function ExpiryStrip({ shopId }: { shopId: number }) {
 
 function Greeting({ ownerName }: { ownerName: string }) {
   const { t, lang } = useI18n()
-  const h = new Date().getHours()
+  const timestamp = useNow(60_000)
+  const h = new Date(timestamp).getHours()
   const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
-  const dateStr = new Date().toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN',
+  const dateStr = new Date(timestamp).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN',
     { weekday: 'long', day: 'numeric', month: 'long' })
   return (
     <header className="hand-tilt">

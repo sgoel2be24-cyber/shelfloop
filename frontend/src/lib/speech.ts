@@ -6,7 +6,7 @@ export function speak(text: string, lang: Lang): void {
   const synth = window.speechSynthesis
   synth.cancel()
   const clean = text
-    .replace(/[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F]/gu, ' ')
+    .replace(/\p{Extended_Pictographic}|[\u2600-\u27BF]|\uFE0F/gu, ' ')
     .replace(/₹\s?/g, lang === 'hi' ? 'रुपये ' : 'rupees ')
     .replace(/\s+/g, ' ')
     .trim()

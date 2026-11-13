@@ -1,401 +1,401 @@
-scenario,kind,strategy,coverage_pct,cash_paise,exchanged,status,ms
-0,cooperative,manual,100.0,50455,0,OPTIMAL,22
-0,cooperative,replenishment_only,100.0,45057,0,OPTIMAL,16
-0,cooperative,pairwise_only,100.0,30751,4,OPTIMAL,16
-0,cooperative,shelfloop,100.0,30751,4,OPTIMAL,15
-1,cooperative,manual,100.0,62650,0,OPTIMAL,14
-1,cooperative,replenishment_only,100.0,55944,0,OPTIMAL,16
-1,cooperative,pairwise_only,100.0,55944,0,OPTIMAL,15
-1,cooperative,shelfloop,100.0,55944,0,OPTIMAL,16
-2,cooperative,manual,100.0,52371,0,OPTIMAL,15
-2,cooperative,replenishment_only,100.0,46763,0,OPTIMAL,16
-2,cooperative,pairwise_only,100.0,5367,8,OPTIMAL,16
-2,cooperative,shelfloop,100.0,5367,8,OPTIMAL,17
-3,unfavourable,manual,100.0,26603,0,OPTIMAL,16
-3,unfavourable,replenishment_only,100.0,23760,0,OPTIMAL,15
-3,unfavourable,pairwise_only,100.0,23760,0,OPTIMAL,16
-3,unfavourable,shelfloop,100.0,23760,0,OPTIMAL,15
-4,impossible,manual,0.0,0,0,OPTIMAL,16
-4,impossible,replenishment_only,0.0,0,0,OPTIMAL,14
-4,impossible,pairwise_only,0.0,0,0,OPTIMAL,15
-4,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-5,cooperative,manual,100.0,91601,0,OPTIMAL,15
-5,cooperative,replenishment_only,100.0,81794,0,OPTIMAL,14
-5,cooperative,pairwise_only,100.0,54669,10,OPTIMAL,16
-5,cooperative,shelfloop,100.0,54669,10,OPTIMAL,16
-6,cooperative,manual,100.0,66612,0,OPTIMAL,16
-6,cooperative,replenishment_only,100.0,59489,0,OPTIMAL,16
-6,cooperative,pairwise_only,100.0,59489,0,OPTIMAL,15
-6,cooperative,shelfloop,100.0,33629,12,OPTIMAL,15
-7,cooperative,manual,100.0,99686,0,OPTIMAL,15
-7,cooperative,replenishment_only,100.0,89021,0,OPTIMAL,15
-7,cooperative,pairwise_only,100.0,27867,18,OPTIMAL,16
-7,cooperative,shelfloop,100.0,29435,18,OPTIMAL,16
-8,unfavourable,manual,100.0,89308,0,OPTIMAL,15
-8,unfavourable,replenishment_only,100.0,79750,0,OPTIMAL,16
-8,unfavourable,pairwise_only,100.0,79750,0,OPTIMAL,17
-8,unfavourable,shelfloop,100.0,79750,0,OPTIMAL,15
-9,impossible,manual,0.0,0,0,OPTIMAL,15
-9,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-9,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-9,impossible,shelfloop,0.0,0,0,OPTIMAL,17
-10,cooperative,manual,100.0,31434,0,OPTIMAL,15
-10,cooperative,replenishment_only,100.0,28068,0,OPTIMAL,16
-10,cooperative,pairwise_only,100.0,28068,0,OPTIMAL,15
-10,cooperative,shelfloop,100.0,718,15,OPTIMAL,15
-11,cooperative,manual,100.0,39668,0,OPTIMAL,15
-11,cooperative,replenishment_only,100.0,35427,0,OPTIMAL,16
-11,cooperative,pairwise_only,100.0,35427,0,OPTIMAL,14
-11,cooperative,shelfloop,100.0,35427,0,OPTIMAL,16
-12,cooperative,manual,100.0,76581,0,OPTIMAL,15
-12,cooperative,replenishment_only,100.0,68393,0,OPTIMAL,15
-12,cooperative,pairwise_only,100.0,27833,10,OPTIMAL,15
-12,cooperative,shelfloop,100.0,27833,10,OPTIMAL,16
-13,unfavourable,manual,100.0,95646,0,OPTIMAL,16
-13,unfavourable,replenishment_only,100.0,85400,0,OPTIMAL,15
-13,unfavourable,pairwise_only,100.0,85400,0,OPTIMAL,16
-13,unfavourable,shelfloop,100.0,85400,0,OPTIMAL,14
-14,impossible,manual,0.0,0,0,OPTIMAL,14
-14,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-14,impossible,pairwise_only,0.0,0,0,OPTIMAL,15
-14,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-15,cooperative,manual,100.0,29642,0,OPTIMAL,15
-15,cooperative,replenishment_only,100.0,26472,0,OPTIMAL,16
-15,cooperative,pairwise_only,100.0,14530,4,OPTIMAL,15
-15,cooperative,shelfloop,100.0,14530,4,OPTIMAL,16
-16,cooperative,manual,100.0,105876,0,OPTIMAL,15
-16,cooperative,replenishment_only,100.0,94549,0,OPTIMAL,15
-16,cooperative,pairwise_only,100.0,38952,22,OPTIMAL,16
-16,cooperative,shelfloop,100.0,53694,17,OPTIMAL,32
-17,cooperative,manual,100.0,87084,0,OPTIMAL,14
-17,cooperative,replenishment_only,100.0,77762,0,OPTIMAL,15
-17,cooperative,pairwise_only,100.0,49974,8,OPTIMAL,16
-17,cooperative,shelfloop,100.0,35874,12,OPTIMAL,16
-18,unfavourable,manual,100.0,43633,0,OPTIMAL,15
-18,unfavourable,replenishment_only,100.0,38968,0,OPTIMAL,16
-18,unfavourable,pairwise_only,100.0,38968,0,OPTIMAL,15
-18,unfavourable,shelfloop,100.0,38968,0,OPTIMAL,16
-19,impossible,manual,0.0,0,0,OPTIMAL,15
-19,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-19,impossible,pairwise_only,0.0,0,0,OPTIMAL,15
-19,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-20,cooperative,manual,100.0,122526,0,OPTIMAL,14
-20,cooperative,replenishment_only,100.0,109421,0,OPTIMAL,16
-20,cooperative,pairwise_only,100.0,70303,12,OPTIMAL,15
-20,cooperative,shelfloop,100.0,86101,6,OPTIMAL,16
-21,cooperative,manual,100.0,42506,0,OPTIMAL,15
-21,cooperative,replenishment_only,100.0,37961,0,OPTIMAL,15
-21,cooperative,pairwise_only,100.0,37961,0,OPTIMAL,16
-21,cooperative,shelfloop,100.0,37961,0,OPTIMAL,16
-22,cooperative,manual,100.0,29461,0,OPTIMAL,16
-22,cooperative,replenishment_only,100.0,26316,0,OPTIMAL,15
-22,cooperative,pairwise_only,100.0,26316,0,OPTIMAL,16
-22,cooperative,shelfloop,100.0,26316,0,OPTIMAL,15
-23,unfavourable,manual,100.0,72004,0,OPTIMAL,15
-23,unfavourable,replenishment_only,100.0,64300,0,OPTIMAL,15
-23,unfavourable,pairwise_only,100.0,64300,0,OPTIMAL,16
-23,unfavourable,shelfloop,100.0,64300,0,OPTIMAL,16
-24,impossible,manual,0.0,0,0,OPTIMAL,15
-24,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-24,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-24,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-25,cooperative,manual,100.0,50972,0,OPTIMAL,16
-25,cooperative,replenishment_only,100.0,45515,0,OPTIMAL,15
-25,cooperative,pairwise_only,100.0,45515,0,OPTIMAL,15
-25,cooperative,shelfloop,100.0,45515,0,OPTIMAL,15
-26,cooperative,manual,100.0,48581,0,OPTIMAL,16
-26,cooperative,replenishment_only,100.0,43382,0,OPTIMAL,15
-26,cooperative,pairwise_only,100.0,43382,0,OPTIMAL,15
-26,cooperative,shelfloop,100.0,29614,6,OPTIMAL,15
-27,cooperative,manual,100.0,44842,0,OPTIMAL,15
-27,cooperative,replenishment_only,100.0,40042,0,OPTIMAL,15
-27,cooperative,pairwise_only,100.0,40042,0,OPTIMAL,15
-27,cooperative,shelfloop,100.0,40042,0,OPTIMAL,16
-28,unfavourable,manual,100.0,72503,0,OPTIMAL,16
-28,unfavourable,replenishment_only,100.0,64737,0,OPTIMAL,16
-28,unfavourable,pairwise_only,100.0,64737,0,OPTIMAL,16
-28,unfavourable,shelfloop,100.0,64737,0,OPTIMAL,15
-29,impossible,manual,0.0,0,0,OPTIMAL,15
-29,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-29,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-29,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-30,cooperative,manual,100.0,33712,0,OPTIMAL,16
-30,cooperative,replenishment_only,100.0,30105,0,OPTIMAL,15
-30,cooperative,pairwise_only,100.0,30105,0,OPTIMAL,15
-30,cooperative,shelfloop,100.0,17815,6,OPTIMAL,15
-31,cooperative,manual,100.0,18342,0,OPTIMAL,16
-31,cooperative,replenishment_only,100.0,16380,0,OPTIMAL,16
-31,cooperative,pairwise_only,100.0,16380,0,OPTIMAL,15
-31,cooperative,shelfloop,100.0,16380,0,OPTIMAL,16
-32,cooperative,manual,100.0,64602,0,OPTIMAL,14
-32,cooperative,replenishment_only,100.0,57684,0,OPTIMAL,16
-32,cooperative,pairwise_only,100.0,57684,0,OPTIMAL,15
-32,cooperative,shelfloop,100.0,45808,6,OPTIMAL,16
-33,unfavourable,manual,100.0,94598,0,OPTIMAL,15
-33,unfavourable,replenishment_only,100.0,84466,0,OPTIMAL,15
-33,unfavourable,pairwise_only,100.0,84466,0,OPTIMAL,15
-33,unfavourable,shelfloop,100.0,84466,0,OPTIMAL,16
-34,impossible,manual,0.0,0,0,OPTIMAL,15
-34,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-34,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-34,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-35,cooperative,manual,100.0,44966,0,OPTIMAL,15
-35,cooperative,replenishment_only,100.0,40158,0,OPTIMAL,15
-35,cooperative,pairwise_only,100.0,28110,4,OPTIMAL,15
-35,cooperative,shelfloop,100.0,25696,6,OPTIMAL,15
-36,cooperative,manual,100.0,76854,0,OPTIMAL,14
-36,cooperative,replenishment_only,100.0,68627,0,OPTIMAL,16
-36,cooperative,pairwise_only,100.0,52187,4,OPTIMAL,16
-36,cooperative,shelfloop,100.0,35531,10,OPTIMAL,17
-37,cooperative,manual,100.0,31132,0,OPTIMAL,14
-37,cooperative,replenishment_only,100.0,27798,0,OPTIMAL,16
-37,cooperative,pairwise_only,100.0,13776,4,OPTIMAL,16
-37,cooperative,shelfloop,100.0,13776,4,OPTIMAL,15
-38,unfavourable,manual,100.0,60867,0,OPTIMAL,16
-38,unfavourable,replenishment_only,100.0,54353,0,OPTIMAL,15
-38,unfavourable,pairwise_only,100.0,54353,0,OPTIMAL,15
-38,unfavourable,shelfloop,100.0,54353,0,OPTIMAL,15
-39,impossible,manual,0.0,0,0,OPTIMAL,15
-39,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-39,impossible,pairwise_only,0.0,0,0,OPTIMAL,15
-39,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-40,cooperative,manual,100.0,144461,0,OPTIMAL,15
-40,cooperative,replenishment_only,100.0,128994,0,OPTIMAL,16
-40,cooperative,pairwise_only,100.0,83124,10,OPTIMAL,16
-40,cooperative,shelfloop,100.0,58332,16,OPTIMAL,16
-41,cooperative,manual,100.0,125505,0,OPTIMAL,14
-41,cooperative,replenishment_only,100.0,112069,0,OPTIMAL,16
-41,cooperative,pairwise_only,100.0,84785,8,OPTIMAL,16
-41,cooperative,shelfloop,100.0,46871,21,OPTIMAL,16
-42,cooperative,manual,100.0,63459,0,OPTIMAL,15
-42,cooperative,replenishment_only,100.0,56666,0,OPTIMAL,16
-42,cooperative,pairwise_only,100.0,38048,6,OPTIMAL,17
-42,cooperative,shelfloop,100.0,24806,9,OPTIMAL,15
-43,unfavourable,manual,100.0,134212,0,OPTIMAL,14
-43,unfavourable,replenishment_only,100.0,119843,0,OPTIMAL,17
-43,unfavourable,pairwise_only,100.0,119843,0,OPTIMAL,15
-43,unfavourable,shelfloop,100.0,119843,0,OPTIMAL,16
-44,impossible,manual,0.0,0,0,OPTIMAL,15
-44,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-44,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-44,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-45,cooperative,manual,100.0,70970,0,OPTIMAL,15
-45,cooperative,replenishment_only,100.0,63374,0,OPTIMAL,17
-45,cooperative,pairwise_only,100.0,52536,4,OPTIMAL,15
-45,cooperative,shelfloop,100.0,30354,12,OPTIMAL,15
-46,cooperative,manual,100.0,107749,0,OPTIMAL,15
-46,cooperative,replenishment_only,100.0,96217,0,OPTIMAL,15
-46,cooperative,pairwise_only,100.0,57206,14,OPTIMAL,16
-46,cooperative,shelfloop,100.0,57206,14,OPTIMAL,15
-47,cooperative,manual,100.0,36719,0,OPTIMAL,14
-47,cooperative,replenishment_only,100.0,32791,0,OPTIMAL,16
-47,cooperative,pairwise_only,100.0,32791,0,OPTIMAL,16
-47,cooperative,shelfloop,100.0,32791,0,OPTIMAL,15
-48,unfavourable,manual,100.0,12250,0,OPTIMAL,15
-48,unfavourable,replenishment_only,100.0,10942,0,OPTIMAL,16
-48,unfavourable,pairwise_only,100.0,10942,0,OPTIMAL,14
-48,unfavourable,shelfloop,100.0,10942,0,OPTIMAL,16
-49,impossible,manual,0.0,0,0,OPTIMAL,15
-49,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-49,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-49,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-50,cooperative,manual,100.0,117570,0,OPTIMAL,15
-50,cooperative,replenishment_only,100.0,104991,0,OPTIMAL,15
-50,cooperative,pairwise_only,100.0,104991,0,OPTIMAL,15
-50,cooperative,shelfloop,100.0,49911,15,OPTIMAL,15
-51,cooperative,manual,100.0,41979,0,OPTIMAL,15
-51,cooperative,replenishment_only,100.0,37485,0,OPTIMAL,15
-51,cooperative,pairwise_only,100.0,0,14,OPTIMAL,16
-51,cooperative,shelfloop,100.0,0,14,OPTIMAL,14
-52,cooperative,manual,100.0,66140,0,OPTIMAL,15
-52,cooperative,replenishment_only,100.0,59056,0,OPTIMAL,16
-52,cooperative,pairwise_only,100.0,39466,4,OPTIMAL,15
-52,cooperative,shelfloop,100.0,39466,4,OPTIMAL,16
-53,unfavourable,manual,100.0,29731,0,OPTIMAL,16
-53,unfavourable,replenishment_only,100.0,26554,0,OPTIMAL,15
-53,unfavourable,pairwise_only,100.0,26554,0,OPTIMAL,16
-53,unfavourable,shelfloop,100.0,26554,0,OPTIMAL,15
-54,impossible,manual,0.0,0,0,OPTIMAL,16
-54,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-54,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-54,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-55,cooperative,manual,100.0,46136,0,OPTIMAL,15
-55,cooperative,replenishment_only,100.0,41198,0,OPTIMAL,16
-55,cooperative,pairwise_only,100.0,29652,4,OPTIMAL,16
-55,cooperative,shelfloop,100.0,27112,6,OPTIMAL,15
-56,cooperative,manual,100.0,11369,0,OPTIMAL,15
-56,cooperative,replenishment_only,100.0,10153,0,OPTIMAL,16
-56,cooperative,pairwise_only,100.0,10153,0,OPTIMAL,15
-56,cooperative,shelfloop,100.0,10153,0,OPTIMAL,16
-57,cooperative,manual,100.0,50296,0,OPTIMAL,16
-57,cooperative,replenishment_only,100.0,44914,0,OPTIMAL,15
-57,cooperative,pairwise_only,100.0,44914,0,OPTIMAL,16
-57,cooperative,shelfloop,100.0,10114,9,OPTIMAL,16
-58,unfavourable,manual,100.0,65515,0,OPTIMAL,15
-58,unfavourable,replenishment_only,100.0,58504,0,OPTIMAL,16
-58,unfavourable,pairwise_only,100.0,58504,0,OPTIMAL,14
-58,unfavourable,shelfloop,100.0,58504,0,OPTIMAL,15
-59,impossible,manual,0.0,0,0,OPTIMAL,15
-59,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-59,impossible,pairwise_only,0.0,0,0,OPTIMAL,15
-59,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-60,cooperative,manual,100.0,96348,0,OPTIMAL,16
-60,cooperative,replenishment_only,100.0,86034,0,OPTIMAL,16
-60,cooperative,pairwise_only,100.0,86034,0,OPTIMAL,15
-60,cooperative,shelfloop,100.0,66940,6,OPTIMAL,17
-61,cooperative,manual,100.0,25870,0,OPTIMAL,16
-61,cooperative,replenishment_only,100.0,23107,0,OPTIMAL,16
-61,cooperative,pairwise_only,100.0,23107,0,OPTIMAL,17
-61,cooperative,shelfloop,100.0,23107,0,OPTIMAL,14
-62,cooperative,manual,100.0,33627,0,OPTIMAL,16
-62,cooperative,replenishment_only,100.0,30036,0,OPTIMAL,16
-62,cooperative,pairwise_only,100.0,30036,0,OPTIMAL,15
-62,cooperative,shelfloop,100.0,30036,0,OPTIMAL,16
-63,unfavourable,manual,100.0,87062,0,OPTIMAL,15
-63,unfavourable,replenishment_only,100.0,77744,0,OPTIMAL,15
-63,unfavourable,pairwise_only,100.0,77744,0,OPTIMAL,16
-63,unfavourable,shelfloop,100.0,77744,0,OPTIMAL,16
-64,impossible,manual,0.0,0,0,OPTIMAL,15
-64,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-64,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-64,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-65,cooperative,manual,100.0,142081,0,OPTIMAL,14
-65,cooperative,replenishment_only,100.0,126871,0,OPTIMAL,16
-65,cooperative,pairwise_only,100.0,15841,24,OPTIMAL,16
-65,cooperative,shelfloop,100.0,15841,24,OPTIMAL,15
-66,cooperative,manual,100.0,67820,0,OPTIMAL,15
-66,cooperative,replenishment_only,100.0,60564,0,OPTIMAL,14
-66,cooperative,pairwise_only,100.0,47744,4,OPTIMAL,16
-66,cooperative,shelfloop,100.0,7026,18,OPTIMAL,16
-67,cooperative,manual,100.0,85978,0,OPTIMAL,14
-67,cooperative,replenishment_only,100.0,76776,0,OPTIMAL,15
-67,cooperative,pairwise_only,100.0,76776,0,OPTIMAL,15
-67,cooperative,shelfloop,100.0,15786,15,OPTIMAL,15
-68,unfavourable,manual,100.0,59045,0,OPTIMAL,15
-68,unfavourable,replenishment_only,100.0,52723,0,OPTIMAL,16
-68,unfavourable,pairwise_only,100.0,52723,0,OPTIMAL,16
-68,unfavourable,shelfloop,100.0,52723,0,OPTIMAL,15
-69,impossible,manual,0.0,0,0,OPTIMAL,15
-69,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-69,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-69,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-70,cooperative,manual,100.0,36356,0,OPTIMAL,15
-70,cooperative,replenishment_only,100.0,32471,0,OPTIMAL,16
-70,cooperative,pairwise_only,100.0,32471,0,OPTIMAL,15
-70,cooperative,shelfloop,100.0,32471,0,OPTIMAL,16
-71,cooperative,manual,100.0,65976,0,OPTIMAL,15
-71,cooperative,replenishment_only,100.0,58933,0,OPTIMAL,15
-71,cooperative,pairwise_only,100.0,58933,0,OPTIMAL,15
-71,cooperative,shelfloop,100.0,32317,12,OPTIMAL,17
-72,cooperative,manual,100.0,46094,0,OPTIMAL,15
-72,cooperative,replenishment_only,100.0,41170,0,OPTIMAL,16
-72,cooperative,pairwise_only,100.0,41170,0,OPTIMAL,16
-72,cooperative,shelfloop,100.0,41170,0,OPTIMAL,16
-73,unfavourable,manual,100.0,62382,0,OPTIMAL,14
-73,unfavourable,replenishment_only,100.0,55712,0,OPTIMAL,15
-73,unfavourable,pairwise_only,100.0,55712,0,OPTIMAL,16
-73,unfavourable,shelfloop,100.0,55712,0,OPTIMAL,15
-74,impossible,manual,0.0,0,0,OPTIMAL,15
-74,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-74,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-74,impossible,shelfloop,0.0,0,0,OPTIMAL,15
-75,cooperative,manual,100.0,40099,0,OPTIMAL,15
-75,cooperative,replenishment_only,100.0,35814,0,OPTIMAL,16
-75,cooperative,pairwise_only,100.0,35814,0,OPTIMAL,15
-75,cooperative,shelfloop,100.0,35814,0,OPTIMAL,15
-76,cooperative,manual,100.0,47736,0,OPTIMAL,15
-76,cooperative,replenishment_only,100.0,42624,0,OPTIMAL,15
-76,cooperative,pairwise_only,100.0,42624,0,OPTIMAL,16
-76,cooperative,shelfloop,100.0,42624,0,OPTIMAL,15
-77,cooperative,manual,100.0,38845,0,OPTIMAL,16
-77,cooperative,replenishment_only,100.0,34689,0,OPTIMAL,15
-77,cooperative,pairwise_only,100.0,34689,0,OPTIMAL,15
-77,cooperative,shelfloop,100.0,34689,0,OPTIMAL,15
-78,unfavourable,manual,100.0,27937,0,OPTIMAL,16
-78,unfavourable,replenishment_only,100.0,24947,0,OPTIMAL,15
-78,unfavourable,pairwise_only,100.0,24947,0,OPTIMAL,16
-78,unfavourable,shelfloop,100.0,24947,0,OPTIMAL,16
-79,impossible,manual,0.0,0,0,OPTIMAL,15
-79,impossible,replenishment_only,0.0,0,0,OPTIMAL,14
-79,impossible,pairwise_only,0.0,0,0,OPTIMAL,15
-79,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-80,cooperative,manual,100.0,54252,0,OPTIMAL,15
-80,cooperative,replenishment_only,100.0,48457,0,OPTIMAL,15
-80,cooperative,pairwise_only,100.0,48457,0,OPTIMAL,16
-80,cooperative,shelfloop,100.0,15772,15,OPTIMAL,16
-81,cooperative,manual,100.0,86014,0,OPTIMAL,14
-81,cooperative,replenishment_only,100.0,76805,0,OPTIMAL,16
-81,cooperative,pairwise_only,100.0,44577,8,OPTIMAL,16
-81,cooperative,shelfloop,100.0,44577,8,OPTIMAL,15
-82,cooperative,manual,100.0,203382,0,OPTIMAL,14
-82,cooperative,replenishment_only,100.0,181609,0,OPTIMAL,16
-82,cooperative,pairwise_only,100.0,91289,24,OPTIMAL,16
-82,cooperative,shelfloop,100.0,22305,44,OPTIMAL,15
-83,unfavourable,manual,100.0,58953,0,OPTIMAL,16
-83,unfavourable,replenishment_only,100.0,52658,0,OPTIMAL,16
-83,unfavourable,pairwise_only,100.0,52658,0,OPTIMAL,15
-83,unfavourable,shelfloop,100.0,52658,0,OPTIMAL,15
-84,impossible,manual,0.0,0,0,OPTIMAL,15
-84,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-84,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-84,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-85,cooperative,manual,100.0,55739,0,OPTIMAL,15
-85,cooperative,replenishment_only,100.0,49775,0,OPTIMAL,16
-85,cooperative,pairwise_only,100.0,20888,10,OPTIMAL,15
-85,cooperative,shelfloop,100.0,32595,6,OPTIMAL,16
-86,cooperative,manual,100.0,103730,0,OPTIMAL,15
-86,cooperative,replenishment_only,100.0,92627,0,OPTIMAL,16
-86,cooperative,pairwise_only,100.0,67347,8,OPTIMAL,15
-86,cooperative,shelfloop,100.0,46621,18,OPTIMAL,16
-87,cooperative,manual,100.0,23008,0,OPTIMAL,16
-87,cooperative,replenishment_only,100.0,20546,0,OPTIMAL,15
-87,cooperative,pairwise_only,100.0,7530,4,OPTIMAL,16
-87,cooperative,shelfloop,100.0,2512,6,OPTIMAL,14
-88,unfavourable,manual,100.0,81846,0,OPTIMAL,15
-88,unfavourable,replenishment_only,100.0,73088,0,OPTIMAL,15
-88,unfavourable,pairwise_only,100.0,73088,0,OPTIMAL,16
-88,unfavourable,shelfloop,100.0,73088,0,OPTIMAL,15
-89,impossible,manual,0.0,0,0,OPTIMAL,15
-89,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-89,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-89,impossible,shelfloop,0.0,0,0,OPTIMAL,14
-90,cooperative,manual,100.0,44195,0,OPTIMAL,15
-90,cooperative,replenishment_only,100.0,39481,0,OPTIMAL,17
-90,cooperative,pairwise_only,100.0,39481,0,OPTIMAL,16
-90,cooperative,shelfloop,100.0,39481,0,OPTIMAL,16
-91,cooperative,manual,100.0,193628,0,OPTIMAL,15
-91,cooperative,replenishment_only,100.0,172895,0,OPTIMAL,16
-91,cooperative,pairwise_only,100.0,113639,12,OPTIMAL,17
-91,cooperative,shelfloop,100.0,71609,21,OPTIMAL,15
-92,cooperative,manual,100.0,71287,0,OPTIMAL,16
-92,cooperative,replenishment_only,100.0,63667,0,OPTIMAL,14
-92,cooperative,pairwise_only,100.0,41647,8,OPTIMAL,15
-92,cooperative,shelfloop,100.0,16979,24,OPTIMAL,32
-93,unfavourable,manual,100.0,47817,0,OPTIMAL,15
-93,unfavourable,replenishment_only,100.0,42698,0,OPTIMAL,15
-93,unfavourable,pairwise_only,100.0,42698,0,OPTIMAL,16
-93,unfavourable,shelfloop,100.0,42698,0,OPTIMAL,16
-94,impossible,manual,0.0,0,0,OPTIMAL,16
-94,impossible,replenishment_only,0.0,0,0,OPTIMAL,16
-94,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-94,impossible,shelfloop,0.0,0,0,OPTIMAL,16
-95,cooperative,manual,100.0,125228,0,OPTIMAL,16
-95,cooperative,replenishment_only,100.0,111824,0,OPTIMAL,15
-95,cooperative,pairwise_only,100.0,55844,10,OPTIMAL,15
-95,cooperative,shelfloop,100.0,55844,10,OPTIMAL,15
-96,cooperative,manual,100.0,31450,0,OPTIMAL,15
-96,cooperative,replenishment_only,100.0,28086,0,OPTIMAL,16
-96,cooperative,pairwise_only,100.0,28086,0,OPTIMAL,16
-96,cooperative,shelfloop,100.0,11704,6,OPTIMAL,16
-97,cooperative,manual,100.0,32113,0,OPTIMAL,15
-97,cooperative,replenishment_only,100.0,28677,0,OPTIMAL,15
-97,cooperative,pairwise_only,100.0,8484,6,OPTIMAL,15
-97,cooperative,shelfloop,100.0,8484,6,OPTIMAL,16
-98,unfavourable,manual,100.0,124561,0,OPTIMAL,15
-98,unfavourable,replenishment_only,100.0,111224,0,OPTIMAL,15
-98,unfavourable,pairwise_only,100.0,111224,0,OPTIMAL,15
-98,unfavourable,shelfloop,100.0,111224,0,OPTIMAL,16
-99,impossible,manual,0.0,0,0,OPTIMAL,15
-99,impossible,replenishment_only,0.0,0,0,OPTIMAL,15
-99,impossible,pairwise_only,0.0,0,0,OPTIMAL,16
-99,impossible,shelfloop,0.0,0,0,OPTIMAL,15
+scenario,kind,strategy,coverage_pct,cash_paise,external_cash_paise,transport_paise,exchanged,coverage_by_need,status,ms
+0,cooperative,manual,100.0,45057,45057,0,0,"{""1"": 2, ""2"": 5, ""3"": 6}",HEURISTIC,0.03
+0,cooperative,replenishment_only,100.0,45057,45057,0,0,"{""1"": 2, ""2"": 5, ""3"": 6}",OPTIMAL,9.34
+0,cooperative,pairwise_only,100.0,42203,36255,5504,4,"{""1"": 2, ""2"": 5, ""3"": 6}",OPTIMAL,7.27
+0,cooperative,shelfloop,100.0,42203,36255,5504,4,"{""1"": 2, ""2"": 5, ""3"": 6}",OPTIMAL,5.14
+1,cooperative,manual,100.0,55944,55944,0,0,"{""1"": 7, ""2"": 5}",HEURISTIC,0.02
+1,cooperative,replenishment_only,100.0,55944,55944,0,0,"{""1"": 7, ""2"": 5}",OPTIMAL,18.9
+1,cooperative,pairwise_only,100.0,55944,55944,0,0,"{""1"": 7, ""2"": 5}",OPTIMAL,3.47
+1,cooperative,shelfloop,100.0,55944,55944,0,0,"{""1"": 7, ""2"": 5}",OPTIMAL,3.33
+2,cooperative,manual,100.0,46763,46763,0,0,"{""1"": 4, ""2"": 5}",HEURISTIC,0.02
+2,cooperative,replenishment_only,100.0,46763,46763,0,0,"{""1"": 4, ""2"": 5}",OPTIMAL,3.17
+2,cooperative,pairwise_only,100.0,15143,13587,8220,8,"{""1"": 4, ""2"": 5}",OPTIMAL,7.87
+2,cooperative,shelfloop,100.0,15143,13587,8220,8,"{""1"": 4, ""2"": 5}",OPTIMAL,7.09
+3,unfavourable,manual,100.0,23760,23760,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 4, ""7"": 4}",HEURISTIC,0.05
+3,unfavourable,replenishment_only,100.0,23760,23760,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 4, ""7"": 4}",OPTIMAL,4.92
+3,unfavourable,pairwise_only,100.0,23760,23760,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 4, ""7"": 4}",OPTIMAL,7.95
+3,unfavourable,shelfloop,100.0,23760,23760,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 4, ""7"": 4}",OPTIMAL,7.77
+4,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",HEURISTIC,0.02
+4,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,3.63
+4,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,3.72
+4,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,3.1
+5,cooperative,manual,100.0,81794,81794,0,0,"{""1"": 7, ""2"": 7, ""3"": 5, ""4"": 7}",HEURISTIC,0.02
+5,cooperative,replenishment_only,100.0,81794,81794,0,0,"{""1"": 7, ""2"": 7, ""3"": 5, ""4"": 7}",OPTIMAL,4.0
+5,cooperative,pairwise_only,100.0,74669,60709,6040,10,"{""1"": 7, ""2"": 7, ""3"": 5, ""4"": 7}",OPTIMAL,6.94
+5,cooperative,shelfloop,100.0,74669,60709,6040,10,"{""1"": 7, ""2"": 7, ""3"": 5, ""4"": 7}",OPTIMAL,5.93
+6,cooperative,manual,100.0,59489,59489,0,0,"{""1"": 4, ""2"": 4, ""3"": 5, ""4"": 7, ""5"": 7, ""6"": 2, ""7"": 4, ""8"": 5}",HEURISTIC,0.03
+6,cooperative,replenishment_only,100.0,59489,59489,0,0,"{""1"": 4, ""2"": 4, ""3"": 5, ""4"": 7, ""5"": 7, ""6"": 2, ""7"": 4, ""8"": 5}",OPTIMAL,5.94
+6,cooperative,pairwise_only,100.0,43665,35536,14505,22,"{""1"": 4, ""2"": 4, ""3"": 5, ""4"": 7, ""5"": 7, ""6"": 2, ""7"": 4, ""8"": 5}",OPTIMAL,19.19
+6,cooperative,shelfloop,100.0,35885,25700,15801,26,"{""1"": 4, ""2"": 4, ""3"": 5, ""4"": 7, ""5"": 7, ""6"": 2, ""7"": 4, ""8"": 5}",OPTIMAL,62.41
+7,cooperative,manual,100.0,89021,89021,0,0,"{""1"": 3, ""2"": 5, ""3"": 3, ""4"": 6, ""5"": 4, ""6"": 3, ""7"": 5}",HEURISTIC,0.04
+7,cooperative,replenishment_only,100.0,89021,89021,0,0,"{""1"": 3, ""2"": 5, ""3"": 3, ""4"": 6, ""5"": 4, ""6"": 3, ""7"": 5}",OPTIMAL,5.05
+7,cooperative,pairwise_only,100.0,53194,51848,12785,14,"{""1"": 3, ""2"": 5, ""3"": 3, ""4"": 6, ""5"": 4, ""6"": 3, ""7"": 5}",OPTIMAL,18.23
+7,cooperative,shelfloop,100.0,51806,42568,13133,18,"{""1"": 3, ""2"": 5, ""3"": 3, ""4"": 6, ""5"": 4, ""6"": 3, ""7"": 5}",OPTIMAL,37.55
+8,unfavourable,manual,100.0,79750,79750,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 2}",HEURISTIC,0.04
+8,unfavourable,replenishment_only,100.0,79750,79750,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 2}",OPTIMAL,5.58
+8,unfavourable,pairwise_only,100.0,79750,79750,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 2}",OPTIMAL,4.97
+8,unfavourable,shelfloop,100.0,79750,79750,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 2}",OPTIMAL,4.68
+9,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",HEURISTIC,0.01
+9,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.23
+9,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.01
+9,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.02
+10,cooperative,manual,100.0,28068,28068,0,0,"{""1"": 6, ""2"": 5, ""3"": 5}",HEURISTIC,0.03
+10,cooperative,replenishment_only,100.0,28068,28068,0,0,"{""1"": 6, ""2"": 5, ""3"": 5}",OPTIMAL,4.26
+10,cooperative,pairwise_only,100.0,28068,28068,0,0,"{""1"": 6, ""2"": 5, ""3"": 5}",OPTIMAL,3.83
+10,cooperative,shelfloop,100.0,22543,8548,7830,15,"{""1"": 6, ""2"": 5, ""3"": 5}",OPTIMAL,8.08
+11,cooperative,manual,100.0,35427,35427,0,0,"{""1"": 5, ""2"": 6, ""3"": 5}",HEURISTIC,0.02
+11,cooperative,replenishment_only,100.0,35427,35427,0,0,"{""1"": 5, ""2"": 6, ""3"": 5}",OPTIMAL,4.15
+11,cooperative,pairwise_only,100.0,35427,35427,0,0,"{""1"": 5, ""2"": 6, ""3"": 5}",OPTIMAL,4.11
+11,cooperative,shelfloop,100.0,35427,35427,0,0,"{""1"": 5, ""2"": 6, ""3"": 5}",OPTIMAL,3.75
+12,cooperative,manual,100.0,68393,68393,0,0,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 2, ""5"": 7}",HEURISTIC,0.03
+12,cooperative,replenishment_only,100.0,68393,68393,0,0,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 2, ""5"": 7}",OPTIMAL,5.15
+12,cooperative,pairwise_only,100.0,39778,33383,5550,10,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 2, ""5"": 7}",OPTIMAL,15.0
+12,cooperative,shelfloop,100.0,39778,33383,5550,10,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 2, ""5"": 7}",OPTIMAL,12.52
+13,unfavourable,manual,100.0,85400,85400,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 2, ""5"": 5}",HEURISTIC,0.03
+13,unfavourable,replenishment_only,100.0,85400,85400,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 2, ""5"": 5}",OPTIMAL,7.51
+13,unfavourable,pairwise_only,100.0,85400,85400,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 2, ""5"": 5}",OPTIMAL,5.82
+13,unfavourable,shelfloop,100.0,85400,85400,0,0,"{""1"": 5, ""2"": 4, ""3"": 2, ""4"": 2, ""5"": 5}",OPTIMAL,5.38
+14,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",HEURISTIC,0.02
+14,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.8
+14,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.44
+14,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.48
+15,cooperative,manual,100.0,26472,26472,0,0,"{""1"": 3, ""2"": 4, ""3"": 2}",HEURISTIC,0.02
+15,cooperative,replenishment_only,100.0,26472,26472,0,0,"{""1"": 3, ""2"": 4, ""3"": 2}",OPTIMAL,3.97
+15,cooperative,pairwise_only,100.0,24752,19822,5292,4,"{""1"": 3, ""2"": 4, ""3"": 2}",OPTIMAL,5.82
+15,cooperative,shelfloop,100.0,24752,19822,5292,4,"{""1"": 3, ""2"": 4, ""3"": 2}",OPTIMAL,5.51
+16,cooperative,manual,100.0,94549,94549,0,0,"{""1"": 2, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 7, ""8"": 4}",HEURISTIC,0.05
+16,cooperative,replenishment_only,100.0,94549,94549,0,0,"{""1"": 2, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 7, ""8"": 4}",OPTIMAL,6.15
+16,cooperative,pairwise_only,100.0,72082,62861,23909,22,"{""1"": 2, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 7, ""8"": 4}",OPTIMAL,78.7
+16,cooperative,shelfloop,100.0,72082,62861,23909,22,"{""1"": 2, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 7, ""8"": 4}",OPTIMAL,99.19
+17,cooperative,manual,100.0,77762,77762,0,0,"{""1"": 5, ""2"": 5, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 4}",HEURISTIC,0.03
+17,cooperative,replenishment_only,100.0,77762,77762,0,0,"{""1"": 5, ""2"": 5, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 4}",OPTIMAL,4.8
+17,cooperative,pairwise_only,100.0,58926,57914,7940,8,"{""1"": 5, ""2"": 5, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 4}",OPTIMAL,16.18
+17,cooperative,shelfloop,100.0,49846,44114,8240,12,"{""1"": 5, ""2"": 5, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 4}",OPTIMAL,25.53
+18,unfavourable,manual,100.0,38968,38968,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 5}",HEURISTIC,0.03
+18,unfavourable,replenishment_only,100.0,38968,38968,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 5}",OPTIMAL,4.28
+18,unfavourable,pairwise_only,100.0,38968,38968,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 5}",OPTIMAL,4.06
+18,unfavourable,shelfloop,100.0,38968,38968,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 5}",OPTIMAL,4.36
+19,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",HEURISTIC,0.01
+19,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.07
+19,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.13
+19,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,1.95
+20,cooperative,manual,100.0,109421,109421,0,0,"{""1"": 2, ""2"": 5, ""3"": 6, ""4"": 3, ""5"": 3, ""6"": 5, ""7"": 4}",HEURISTIC,0.03
+20,cooperative,replenishment_only,100.0,109421,109421,0,0,"{""1"": 2, ""2"": 5, ""3"": 6, ""4"": 3, ""5"": 3, ""6"": 5, ""7"": 4}",OPTIMAL,5.09
+20,cooperative,pairwise_only,100.0,86391,83813,13510,12,"{""1"": 2, ""2"": 5, ""3"": 6, ""4"": 3, ""5"": 3, ""6"": 5, ""7"": 4}",OPTIMAL,12.7
+20,cooperative,shelfloop,100.0,86391,83813,13510,12,"{""1"": 2, ""2"": 5, ""3"": 6, ""4"": 3, ""5"": 3, ""6"": 5, ""7"": 4}",OPTIMAL,16.08
+21,cooperative,manual,100.0,37961,37961,0,0,"{""1"": 7, ""2"": 7, ""3"": 2}",HEURISTIC,0.02
+21,cooperative,replenishment_only,100.0,37961,37961,0,0,"{""1"": 7, ""2"": 7, ""3"": 2}",OPTIMAL,5.02
+21,cooperative,pairwise_only,100.0,19051,16999,9152,12,"{""1"": 7, ""2"": 7, ""3"": 2}",OPTIMAL,5.27
+21,cooperative,shelfloop,100.0,19051,16999,9152,12,"{""1"": 7, ""2"": 7, ""3"": 2}",OPTIMAL,5.16
+22,cooperative,manual,100.0,26316,26316,0,0,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 3}",HEURISTIC,0.03
+22,cooperative,replenishment_only,100.0,26316,26316,0,0,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 3}",OPTIMAL,7.34
+22,cooperative,pairwise_only,100.0,24168,22936,6128,4,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 3}",OPTIMAL,22.23
+22,cooperative,shelfloop,100.0,23700,23378,6416,6,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 4, ""5"": 2, ""6"": 3}",OPTIMAL,37.22
+23,unfavourable,manual,100.0,64300,64300,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 3, ""5"": 5}",HEURISTIC,0.05
+23,unfavourable,replenishment_only,100.0,64300,64300,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 3, ""5"": 5}",OPTIMAL,5.22
+23,unfavourable,pairwise_only,100.0,64300,64300,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 3, ""5"": 5}",OPTIMAL,4.44
+23,unfavourable,shelfloop,100.0,64300,64300,0,0,"{""1"": 5, ""2"": 2, ""3"": 5, ""4"": 3, ""5"": 5}",OPTIMAL,5.65
+24,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",HEURISTIC,0.03
+24,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,2.7
+24,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,2.35
+24,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,2.27
+25,cooperative,manual,100.0,45515,45515,0,0,"{""1"": 4, ""2"": 7, ""3"": 4}",HEURISTIC,0.02
+25,cooperative,replenishment_only,100.0,45515,45515,0,0,"{""1"": 4, ""2"": 7, ""3"": 4}",OPTIMAL,3.98
+25,cooperative,pairwise_only,100.0,45515,45515,0,0,"{""1"": 4, ""2"": 7, ""3"": 4}",OPTIMAL,3.9
+25,cooperative,shelfloop,100.0,45515,45515,0,0,"{""1"": 4, ""2"": 7, ""3"": 4}",OPTIMAL,4.03
+26,cooperative,manual,100.0,43382,43382,0,0,"{""1"": 2, ""2"": 5, ""3"": 4, ""4"": 2, ""5"": 2, ""6"": 2}",HEURISTIC,0.03
+26,cooperative,replenishment_only,100.0,43382,43382,0,0,"{""1"": 2, ""2"": 5, ""3"": 4, ""4"": 2, ""5"": 2, ""6"": 2}",OPTIMAL,4.79
+26,cooperative,pairwise_only,100.0,42036,40028,5914,4,"{""1"": 2, ""2"": 5, ""3"": 4, ""4"": 2, ""5"": 2, ""6"": 2}",OPTIMAL,18.94
+26,cooperative,shelfloop,100.0,39986,35582,5968,6,"{""1"": 2, ""2"": 5, ""3"": 4, ""4"": 2, ""5"": 2, ""6"": 2}",OPTIMAL,23.31
+27,cooperative,manual,100.0,40042,40042,0,0,"{""1"": 4, ""2"": 6}",HEURISTIC,0.02
+27,cooperative,replenishment_only,100.0,40042,40042,0,0,"{""1"": 4, ""2"": 6}",OPTIMAL,3.28
+27,cooperative,pairwise_only,100.0,40042,40042,0,0,"{""1"": 4, ""2"": 6}",OPTIMAL,3.99
+27,cooperative,shelfloop,100.0,40042,40042,0,0,"{""1"": 4, ""2"": 6}",OPTIMAL,3.93
+28,unfavourable,manual,100.0,64737,64737,0,0,"{""1"": 2, ""2"": 5, ""3"": 3, ""4"": 2, ""5"": 4}",HEURISTIC,0.03
+28,unfavourable,replenishment_only,100.0,64737,64737,0,0,"{""1"": 2, ""2"": 5, ""3"": 3, ""4"": 2, ""5"": 4}",OPTIMAL,4.47
+28,unfavourable,pairwise_only,100.0,64737,64737,0,0,"{""1"": 2, ""2"": 5, ""3"": 3, ""4"": 2, ""5"": 4}",OPTIMAL,7.22
+28,unfavourable,shelfloop,100.0,64737,64737,0,0,"{""1"": 2, ""2"": 5, ""3"": 3, ""4"": 2, ""5"": 4}",OPTIMAL,5.82
+29,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",HEURISTIC,0.04
+29,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.41
+29,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.36
+29,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,3.26
+30,cooperative,manual,100.0,30105,30105,0,0,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 5}",HEURISTIC,0.04
+30,cooperative,replenishment_only,100.0,30105,30105,0,0,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 5}",OPTIMAL,6.55
+30,cooperative,pairwise_only,100.0,30105,30105,0,0,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 5}",OPTIMAL,6.51
+30,cooperative,shelfloop,100.0,26873,23593,5778,6,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 5}",OPTIMAL,8.59
+31,cooperative,manual,100.0,16380,16380,0,0,"{""1"": 7, ""2"": 2, ""3"": 6, ""4"": 3}",HEURISTIC,0.04
+31,cooperative,replenishment_only,100.0,16380,16380,0,0,"{""1"": 7, ""2"": 2, ""3"": 6, ""4"": 3}",OPTIMAL,3.92
+31,cooperative,pairwise_only,100.0,16380,16380,0,0,"{""1"": 7, ""2"": 2, ""3"": 6, ""4"": 3}",OPTIMAL,5.12
+31,cooperative,shelfloop,100.0,16380,16380,0,0,"{""1"": 7, ""2"": 2, ""3"": 6, ""4"": 3}",OPTIMAL,4.14
+32,cooperative,manual,100.0,57684,57684,0,0,"{""1"": 6, ""2"": 4, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5}",HEURISTIC,0.05
+32,cooperative,replenishment_only,100.0,57684,57684,0,0,"{""1"": 6, ""2"": 4, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5}",OPTIMAL,5.68
+32,cooperative,pairwise_only,100.0,57684,57684,0,0,"{""1"": 6, ""2"": 4, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5}",OPTIMAL,14.84
+32,cooperative,shelfloop,100.0,54268,52342,6534,6,"{""1"": 6, ""2"": 4, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5}",OPTIMAL,22.09
+33,unfavourable,manual,100.0,84466,84466,0,0,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 2, ""6"": 3, ""7"": 4, ""8"": 2}",HEURISTIC,0.05
+33,unfavourable,replenishment_only,100.0,84466,84466,0,0,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 2, ""6"": 3, ""7"": 4, ""8"": 2}",OPTIMAL,9.35
+33,unfavourable,pairwise_only,100.0,84466,84466,0,0,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 2, ""6"": 3, ""7"": 4, ""8"": 2}",OPTIMAL,7.76
+33,unfavourable,shelfloop,100.0,84466,84466,0,0,"{""1"": 4, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 2, ""6"": 3, ""7"": 4, ""8"": 2}",OPTIMAL,5.35
+34,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",HEURISTIC,0.02
+34,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,2.43
+34,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,2.02
+34,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,3.23
+35,cooperative,manual,100.0,40158,40158,0,0,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 6}",HEURISTIC,0.03
+35,cooperative,replenishment_only,100.0,40158,40158,0,0,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 6}",OPTIMAL,4.58
+35,cooperative,pairwise_only,100.0,30230,29722,7000,8,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 6}",OPTIMAL,15.63
+35,cooperative,shelfloop,100.0,30230,29722,7000,8,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 6}",OPTIMAL,19.84
+36,cooperative,manual,100.0,68627,68627,0,0,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 7, ""5"": 2, ""6"": 3}",HEURISTIC,0.03
+36,cooperative,replenishment_only,100.0,68627,68627,0,0,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 7, ""5"": 2, ""6"": 3}",OPTIMAL,6.29
+36,cooperative,pairwise_only,100.0,61699,58061,5874,4,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 7, ""5"": 2, ""6"": 3}",OPTIMAL,10.19
+36,cooperative,shelfloop,100.0,52735,47923,12392,10,"{""1"": 4, ""2"": 2, ""3"": 5, ""4"": 7, ""5"": 2, ""6"": 3}",OPTIMAL,20.76
+37,cooperative,manual,100.0,27798,27798,0,0,"{""1"": 2, ""2"": 7, ""3"": 2}",HEURISTIC,0.03
+37,cooperative,replenishment_only,100.0,27798,27798,0,0,"{""1"": 2, ""2"": 7, ""3"": 2}",OPTIMAL,7.62
+37,cooperative,pairwise_only,100.0,27070,20308,6532,4,"{""1"": 2, ""2"": 7, ""3"": 2}",OPTIMAL,9.13
+37,cooperative,shelfloop,100.0,27070,20308,6532,4,"{""1"": 2, ""2"": 7, ""3"": 2}",OPTIMAL,8.44
+38,unfavourable,manual,100.0,54353,54353,0,0,"{""1"": 5, ""2"": 3, ""3"": 5, ""4"": 2}",HEURISTIC,0.03
+38,unfavourable,replenishment_only,100.0,54353,54353,0,0,"{""1"": 5, ""2"": 3, ""3"": 5, ""4"": 2}",OPTIMAL,5.91
+38,unfavourable,pairwise_only,100.0,54353,54353,0,0,"{""1"": 5, ""2"": 3, ""3"": 5, ""4"": 2}",OPTIMAL,5.97
+38,unfavourable,shelfloop,100.0,54353,54353,0,0,"{""1"": 5, ""2"": 3, ""3"": 5, ""4"": 2}",OPTIMAL,4.1
+39,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",HEURISTIC,0.02
+39,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,3.19
+39,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,2.42
+39,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,2.28
+40,cooperative,manual,100.0,128994,128994,0,0,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 2, ""5"": 7, ""6"": 5, ""7"": 6}",HEURISTIC,0.03
+40,cooperative,replenishment_only,100.0,128994,128994,0,0,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 2, ""5"": 7, ""6"": 5, ""7"": 6}",OPTIMAL,5.62
+40,cooperative,pairwise_only,100.0,94784,90224,7100,10,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 2, ""5"": 7, ""6"": 5, ""7"": 6}",OPTIMAL,13.34
+40,cooperative,shelfloop,100.0,79592,72690,14358,16,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 2, ""5"": 7, ""6"": 5, ""7"": 6}",OPTIMAL,20.23
+41,cooperative,manual,100.0,112069,112069,0,0,"{""1"": 7, ""2"": 7, ""3"": 4, ""4"": 6, ""5"": 4, ""6"": 4, ""7"": 3, ""8"": 3}",HEURISTIC,0.03
+41,cooperative,replenishment_only,100.0,112069,112069,0,0,"{""1"": 7, ""2"": 7, ""3"": 4, ""4"": 6, ""5"": 4, ""6"": 4, ""7"": 3, ""8"": 3}",OPTIMAL,5.58
+41,cooperative,pairwise_only,100.0,97125,90713,5928,8,"{""1"": 7, ""2"": 7, ""3"": 4, ""4"": 6, ""5"": 4, ""6"": 4, ""7"": 3, ""8"": 3}",OPTIMAL,13.07
+41,cooperative,shelfloop,100.0,68823,60383,13512,21,"{""1"": 7, ""2"": 7, ""3"": 4, ""4"": 6, ""5"": 4, ""6"": 4, ""7"": 3, ""8"": 3}",OPTIMAL,24.46
+42,cooperative,manual,100.0,56666,56666,0,0,"{""1"": 3, ""2"": 4, ""3"": 3, ""4"": 6}",HEURISTIC,0.02
+42,cooperative,replenishment_only,100.0,56666,56666,0,0,"{""1"": 3, ""2"": 4, ""3"": 3, ""4"": 6}",OPTIMAL,4.25
+42,cooperative,pairwise_only,100.0,46000,44347,6299,6,"{""1"": 3, ""2"": 4, ""3"": 3, ""4"": 6}",OPTIMAL,7.65
+42,cooperative,shelfloop,100.0,41377,31909,7103,9,"{""1"": 3, ""2"": 4, ""3"": 3, ""4"": 6}",OPTIMAL,13.3
+43,unfavourable,manual,100.0,119843,119843,0,0,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 2}",HEURISTIC,0.04
+43,unfavourable,replenishment_only,100.0,119843,119843,0,0,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 2}",OPTIMAL,5.57
+43,unfavourable,pairwise_only,100.0,119843,119843,0,0,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 2}",OPTIMAL,8.87
+43,unfavourable,shelfloop,100.0,119843,119843,0,0,"{""1"": 2, ""2"": 4, ""3"": 4, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 2}",OPTIMAL,8.9
+44,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",HEURISTIC,0.04
+44,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",OPTIMAL,3.89
+44,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",OPTIMAL,3.86
+44,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",OPTIMAL,3.61
+45,cooperative,manual,100.0,63374,63374,0,0,"{""1"": 5, ""2"": 6, ""3"": 2, ""4"": 6, ""5"": 2, ""6"": 2}",HEURISTIC,0.06
+45,cooperative,replenishment_only,100.0,63374,63374,0,0,"{""1"": 5, ""2"": 6, ""3"": 2, ""4"": 6, ""5"": 2, ""6"": 2}",OPTIMAL,7.23
+45,cooperative,pairwise_only,100.0,63374,63374,0,0,"{""1"": 5, ""2"": 6, ""3"": 2, ""4"": 6, ""5"": 2, ""6"": 2}",OPTIMAL,14.91
+45,cooperative,shelfloop,100.0,49856,43188,12834,12,"{""1"": 5, ""2"": 6, ""3"": 2, ""4"": 6, ""5"": 2, ""6"": 2}",OPTIMAL,20.56
+46,cooperative,manual,100.0,96217,96217,0,0,"{""1"": 7, ""2"": 4, ""3"": 7, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 3}",HEURISTIC,0.03
+46,cooperative,replenishment_only,100.0,96217,96217,0,0,"{""1"": 7, ""2"": 4, ""3"": 7, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 3}",OPTIMAL,5.1
+46,cooperative,pairwise_only,100.0,69797,61526,15466,18,"{""1"": 7, ""2"": 4, ""3"": 7, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 3}",OPTIMAL,17.92
+46,cooperative,shelfloop,100.0,69797,61526,15466,18,"{""1"": 7, ""2"": 4, ""3"": 7, ""4"": 6, ""5"": 6, ""6"": 3, ""7"": 3}",OPTIMAL,18.38
+47,cooperative,manual,100.0,32791,32791,0,0,"{""1"": 5, ""2"": 4, ""3"": 2}",HEURISTIC,0.02
+47,cooperative,replenishment_only,100.0,32791,32791,0,0,"{""1"": 5, ""2"": 4, ""3"": 2}",OPTIMAL,3.9
+47,cooperative,pairwise_only,100.0,32791,32791,0,0,"{""1"": 5, ""2"": 4, ""3"": 2}",OPTIMAL,3.84
+47,cooperative,shelfloop,100.0,32791,32791,0,0,"{""1"": 5, ""2"": 4, ""3"": 2}",OPTIMAL,4.38
+48,unfavourable,manual,100.0,10942,10942,0,0,"{""1"": 2, ""2"": 2, ""3"": 2}",HEURISTIC,0.02
+48,unfavourable,replenishment_only,100.0,10942,10942,0,0,"{""1"": 2, ""2"": 2, ""3"": 2}",OPTIMAL,3.76
+48,unfavourable,pairwise_only,100.0,10942,10942,0,0,"{""1"": 2, ""2"": 2, ""3"": 2}",OPTIMAL,3.82
+48,unfavourable,shelfloop,100.0,10942,10942,0,0,"{""1"": 2, ""2"": 2, ""3"": 2}",OPTIMAL,3.72
+49,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",HEURISTIC,0.01
+49,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,3.18
+49,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,3.28
+49,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,3.2
+50,cooperative,manual,100.0,104991,104991,0,0,"{""1"": 7, ""2"": 5, ""3"": 7, ""4"": 7, ""5"": 2, ""6"": 7}",HEURISTIC,0.06
+50,cooperative,replenishment_only,100.0,104991,104991,0,0,"{""1"": 7, ""2"": 5, ""3"": 7, ""4"": 7, ""5"": 2, ""6"": 7}",OPTIMAL,5.33
+50,cooperative,pairwise_only,100.0,104991,104991,0,0,"{""1"": 7, ""2"": 5, ""3"": 7, ""4"": 7, ""5"": 2, ""6"": 7}",OPTIMAL,6.26
+50,cooperative,shelfloop,100.0,65266,58736,8825,15,"{""1"": 7, ""2"": 5, ""3"": 7, ""4"": 7, ""5"": 2, ""6"": 7}",OPTIMAL,11.95
+51,cooperative,manual,100.0,37485,37485,0,0,"{""1"": 7, ""2"": 7}",HEURISTIC,0.02
+51,cooperative,replenishment_only,100.0,37485,37485,0,0,"{""1"": 7, ""2"": 7}",OPTIMAL,3.66
+51,cooperative,pairwise_only,100.0,28086,6701,6701,14,"{""1"": 7, ""2"": 7}",OPTIMAL,6.91
+51,cooperative,shelfloop,100.0,28086,6701,6701,14,"{""1"": 7, ""2"": 7}",OPTIMAL,7.98
+52,cooperative,manual,100.0,59056,59056,0,0,"{""1"": 2, ""2"": 6, ""3"": 4}",HEURISTIC,0.02
+52,cooperative,replenishment_only,100.0,59056,59056,0,0,"{""1"": 2, ""2"": 6, ""3"": 4}",OPTIMAL,3.92
+52,cooperative,pairwise_only,100.0,46540,45432,5966,4,"{""1"": 2, ""2"": 6, ""3"": 4}",OPTIMAL,8.2
+52,cooperative,shelfloop,100.0,46540,45432,5966,4,"{""1"": 2, ""2"": 6, ""3"": 4}",OPTIMAL,7.54
+53,unfavourable,manual,100.0,26554,26554,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 2, ""5"": 4}",HEURISTIC,0.03
+53,unfavourable,replenishment_only,100.0,26554,26554,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 2, ""5"": 4}",OPTIMAL,4.41
+53,unfavourable,pairwise_only,100.0,26554,26554,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 2, ""5"": 4}",OPTIMAL,6.93
+53,unfavourable,shelfloop,100.0,26554,26554,0,0,"{""1"": 4, ""2"": 3, ""3"": 2, ""4"": 2, ""5"": 4}",OPTIMAL,7.04
+54,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",HEURISTIC,0.01
+54,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,2.73
+54,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,2.18
+54,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,3.93
+55,cooperative,manual,100.0,41198,41198,0,0,"{""1"": 2, ""2"": 2, ""3"": 3, ""4"": 6}",HEURISTIC,0.02
+55,cooperative,replenishment_only,100.0,41198,41198,0,0,"{""1"": 2, ""2"": 2, ""3"": 3, ""4"": 6}",OPTIMAL,4.5
+55,cooperative,pairwise_only,100.0,41198,41198,0,0,"{""1"": 2, ""2"": 2, ""3"": 3, ""4"": 6}",OPTIMAL,14.03
+55,cooperative,shelfloop,100.0,41198,41198,0,0,"{""1"": 2, ""2"": 2, ""3"": 3, ""4"": 6}",OPTIMAL,15.21
+56,cooperative,manual,100.0,10153,10153,0,0,"{""1"": 2, ""2"": 3}",HEURISTIC,0.02
+56,cooperative,replenishment_only,100.0,10153,10153,0,0,"{""1"": 2, ""2"": 3}",OPTIMAL,3.54
+56,cooperative,pairwise_only,100.0,10153,10153,0,0,"{""1"": 2, ""2"": 3}",OPTIMAL,3.94
+56,cooperative,shelfloop,100.0,10153,10153,0,0,"{""1"": 2, ""2"": 3}",OPTIMAL,3.23
+57,cooperative,manual,100.0,44914,44914,0,0,"{""1"": 3, ""2"": 3, ""3"": 5}",HEURISTIC,0.02
+57,cooperative,replenishment_only,100.0,44914,44914,0,0,"{""1"": 3, ""2"": 3, ""3"": 5}",OPTIMAL,3.81
+57,cooperative,pairwise_only,100.0,44914,44914,0,0,"{""1"": 3, ""2"": 3, ""3"": 5}",OPTIMAL,3.96
+57,cooperative,shelfloop,100.0,19233,16548,6434,9,"{""1"": 3, ""2"": 3, ""3"": 5}",OPTIMAL,8.61
+58,unfavourable,manual,100.0,58504,58504,0,0,"{""1"": 3, ""2"": 3, ""3"": 3, ""4"": 3, ""5"": 3, ""6"": 5}",HEURISTIC,0.03
+58,unfavourable,replenishment_only,100.0,58504,58504,0,0,"{""1"": 3, ""2"": 3, ""3"": 3, ""4"": 3, ""5"": 3, ""6"": 5}",OPTIMAL,4.9
+58,unfavourable,pairwise_only,100.0,58504,58504,0,0,"{""1"": 3, ""2"": 3, ""3"": 3, ""4"": 3, ""5"": 3, ""6"": 5}",OPTIMAL,5.96
+58,unfavourable,shelfloop,100.0,58504,58504,0,0,"{""1"": 3, ""2"": 3, ""3"": 3, ""4"": 3, ""5"": 3, ""6"": 5}",OPTIMAL,5.29
+59,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",HEURISTIC,0.02
+59,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",OPTIMAL,2.38
+59,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",OPTIMAL,2.55
+59,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0}",OPTIMAL,2.24
+60,cooperative,manual,100.0,86034,86034,0,0,"{""1"": 6, ""2"": 2, ""3"": 7, ""4"": 2, ""5"": 7}",HEURISTIC,0.03
+60,cooperative,replenishment_only,100.0,86034,86034,0,0,"{""1"": 6, ""2"": 2, ""3"": 7, ""4"": 2, ""5"": 7}",OPTIMAL,4.89
+60,cooperative,pairwise_only,100.0,82012,81962,5666,4,"{""1"": 6, ""2"": 2, ""3"": 7, ""4"": 2, ""5"": 7}",OPTIMAL,8.25
+60,cooperative,shelfloop,100.0,74878,72616,5676,6,"{""1"": 6, ""2"": 2, ""3"": 7, ""4"": 2, ""5"": 7}",OPTIMAL,16.56
+61,cooperative,manual,100.0,23107,23107,0,0,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 4, ""5"": 2, ""6"": 3, ""7"": 4}",HEURISTIC,0.04
+61,cooperative,replenishment_only,100.0,23107,23107,0,0,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 4, ""5"": 2, ""6"": 3, ""7"": 4}",OPTIMAL,6.09
+61,cooperative,pairwise_only,100.0,20472,18444,5321,6,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 4, ""5"": 2, ""6"": 3, ""7"": 4}",OPTIMAL,11.86
+61,cooperative,shelfloop,100.0,20472,18444,5321,6,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 4, ""5"": 2, ""6"": 3, ""7"": 4}",OPTIMAL,22.12
+62,cooperative,manual,100.0,30036,30036,0,0,"{""1"": 7, ""2"": 2, ""3"": 7, ""4"": 5}",HEURISTIC,0.02
+62,cooperative,replenishment_only,100.0,30036,30036,0,0,"{""1"": 7, ""2"": 2, ""3"": 7, ""4"": 5}",OPTIMAL,5.08
+62,cooperative,pairwise_only,100.0,30036,30036,0,0,"{""1"": 7, ""2"": 2, ""3"": 7, ""4"": 5}",OPTIMAL,6.47
+62,cooperative,shelfloop,100.0,30036,30036,0,0,"{""1"": 7, ""2"": 2, ""3"": 7, ""4"": 5}",OPTIMAL,8.06
+63,unfavourable,manual,100.0,77744,77744,0,0,"{""1"": 3, ""2"": 3, ""3"": 2, ""4"": 3, ""5"": 3, ""6"": 3}",HEURISTIC,0.06
+63,unfavourable,replenishment_only,100.0,77744,77744,0,0,"{""1"": 3, ""2"": 3, ""3"": 2, ""4"": 3, ""5"": 3, ""6"": 3}",OPTIMAL,9.4
+63,unfavourable,pairwise_only,100.0,77744,77744,0,0,"{""1"": 3, ""2"": 3, ""3"": 2, ""4"": 3, ""5"": 3, ""6"": 3}",OPTIMAL,8.8
+63,unfavourable,shelfloop,100.0,77744,77744,0,0,"{""1"": 3, ""2"": 3, ""3"": 2, ""4"": 3, ""5"": 3, ""6"": 3}",OPTIMAL,7.52
+64,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",HEURISTIC,0.02
+64,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,3.66
+64,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,4.04
+64,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0}",OPTIMAL,3.91
+65,cooperative,manual,100.0,126871,126871,0,0,"{""1"": 7, ""2"": 7, ""3"": 3, ""4"": 6, ""5"": 3, ""6"": 4}",HEURISTIC,0.06
+65,cooperative,replenishment_only,100.0,126871,126871,0,0,"{""1"": 7, ""2"": 7, ""3"": 3, ""4"": 6, ""5"": 3, ""6"": 4}",OPTIMAL,9.6
+65,cooperative,pairwise_only,100.0,51655,36001,20160,24,"{""1"": 7, ""2"": 7, ""3"": 3, ""4"": 6, ""5"": 3, ""6"": 4}",OPTIMAL,29.77
+65,cooperative,shelfloop,100.0,51655,36001,20160,24,"{""1"": 7, ""2"": 7, ""3"": 3, ""4"": 6, ""5"": 3, ""6"": 4}",OPTIMAL,34.73
+66,cooperative,manual,100.0,60564,60564,0,0,"{""1"": 2, ""2"": 6, ""3"": 6, ""4"": 6}",HEURISTIC,0.03
+66,cooperative,replenishment_only,100.0,60564,60564,0,0,"{""1"": 2, ""2"": 6, ""3"": 6, ""4"": 6}",OPTIMAL,5.12
+66,cooperative,pairwise_only,100.0,55062,54076,6332,4,"{""1"": 2, ""2"": 6, ""3"": 6, ""4"": 6}",OPTIMAL,6.99
+66,cooperative,shelfloop,100.0,33962,16856,9830,18,"{""1"": 2, ""2"": 6, ""3"": 6, ""4"": 6}",OPTIMAL,23.39
+67,cooperative,manual,100.0,76776,76776,0,0,"{""1"": 6, ""2"": 7, ""3"": 5}",HEURISTIC,0.04
+67,cooperative,replenishment_only,100.0,76776,76776,0,0,"{""1"": 6, ""2"": 7, ""3"": 5}",OPTIMAL,6.72
+67,cooperative,pairwise_only,100.0,76776,76776,0,0,"{""1"": 6, ""2"": 7, ""3"": 5}",OPTIMAL,6.69
+67,cooperative,shelfloop,100.0,41231,23241,7455,15,"{""1"": 6, ""2"": 7, ""3"": 5}",OPTIMAL,16.35
+68,unfavourable,manual,100.0,52723,52723,0,0,"{""1"": 2, ""2"": 2, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 5, ""7"": 2, ""8"": 5}",HEURISTIC,0.08
+68,unfavourable,replenishment_only,100.0,52723,52723,0,0,"{""1"": 2, ""2"": 2, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 5, ""7"": 2, ""8"": 5}",OPTIMAL,12.18
+68,unfavourable,pairwise_only,100.0,52723,52723,0,0,"{""1"": 2, ""2"": 2, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 5, ""7"": 2, ""8"": 5}",OPTIMAL,11.79
+68,unfavourable,shelfloop,100.0,52723,52723,0,0,"{""1"": 2, ""2"": 2, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 5, ""7"": 2, ""8"": 5}",OPTIMAL,12.06
+69,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",HEURISTIC,0.02
+69,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.8
+69,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.77
+69,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0}",OPTIMAL,2.68
+70,cooperative,manual,100.0,32471,32471,0,0,"{""1"": 7, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 3, ""6"": 4}",HEURISTIC,0.05
+70,cooperative,replenishment_only,100.0,32471,32471,0,0,"{""1"": 7, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 3, ""6"": 4}",OPTIMAL,6.85
+70,cooperative,pairwise_only,100.0,31360,29902,7070,6,"{""1"": 7, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 3, ""6"": 4}",OPTIMAL,21.13
+70,cooperative,shelfloop,100.0,31360,29902,7070,6,"{""1"": 7, ""2"": 4, ""3"": 2, ""4"": 4, ""5"": 3, ""6"": 4}",OPTIMAL,27.13
+71,cooperative,manual,100.0,58933,58933,0,0,"{""1"": 3, ""2"": 2, ""3"": 4, ""4"": 4, ""5"": 7, ""6"": 6, ""7"": 7}",HEURISTIC,0.06
+71,cooperative,replenishment_only,100.0,58933,58933,0,0,"{""1"": 3, ""2"": 2, ""3"": 4, ""4"": 4, ""5"": 7, ""6"": 6, ""7"": 7}",OPTIMAL,6.76
+71,cooperative,pairwise_only,100.0,53465,53421,8152,8,"{""1"": 3, ""2"": 2, ""3"": 4, ""4"": 4, ""5"": 7, ""6"": 6, ""7"": 7}",OPTIMAL,10.41
+71,cooperative,shelfloop,100.0,41653,34015,13972,18,"{""1"": 3, ""2"": 2, ""3"": 4, ""4"": 4, ""5"": 7, ""6"": 6, ""7"": 7}",OPTIMAL,37.32
+72,cooperative,manual,100.0,41170,41170,0,0,"{""1"": 4, ""2"": 4, ""3"": 4, ""4"": 6, ""5"": 3, ""6"": 4}",HEURISTIC,0.05
+72,cooperative,replenishment_only,100.0,41170,41170,0,0,"{""1"": 4, ""2"": 4, ""3"": 4, ""4"": 6, ""5"": 3, ""6"": 4}",OPTIMAL,7.3
+72,cooperative,pairwise_only,100.0,41170,41170,0,0,"{""1"": 4, ""2"": 4, ""3"": 4, ""4"": 6, ""5"": 3, ""6"": 4}",OPTIMAL,15.73
+72,cooperative,shelfloop,100.0,33182,29706,6556,12,"{""1"": 4, ""2"": 4, ""3"": 4, ""4"": 6, ""5"": 3, ""6"": 4}",OPTIMAL,27.51
+73,unfavourable,manual,100.0,55712,55712,0,0,"{""1"": 3, ""2"": 4, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 2, ""7"": 4}",HEURISTIC,0.07
+73,unfavourable,replenishment_only,100.0,55712,55712,0,0,"{""1"": 3, ""2"": 4, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 2, ""7"": 4}",OPTIMAL,7.43
+73,unfavourable,pairwise_only,100.0,55712,55712,0,0,"{""1"": 3, ""2"": 4, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 2, ""7"": 4}",OPTIMAL,6.97
+73,unfavourable,shelfloop,100.0,55712,55712,0,0,"{""1"": 3, ""2"": 4, ""3"": 2, ""4"": 5, ""5"": 2, ""6"": 2, ""7"": 4}",OPTIMAL,9.17
+74,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",HEURISTIC,0.04
+74,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,4.72
+74,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,4.93
+74,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,4.64
+75,cooperative,manual,100.0,35814,35814,0,0,"{""1"": 4, ""2"": 4, ""3"": 2, ""4"": 3, ""5"": 2}",HEURISTIC,0.09
+75,cooperative,replenishment_only,100.0,35814,35814,0,0,"{""1"": 4, ""2"": 4, ""3"": 2, ""4"": 3, ""5"": 2}",OPTIMAL,10.03
+75,cooperative,pairwise_only,100.0,35814,35814,0,0,"{""1"": 4, ""2"": 4, ""3"": 2, ""4"": 3, ""5"": 2}",OPTIMAL,7.98
+75,cooperative,shelfloop,100.0,35814,35814,0,0,"{""1"": 4, ""2"": 4, ""3"": 2, ""4"": 3, ""5"": 2}",OPTIMAL,8.49
+76,cooperative,manual,100.0,42624,42624,0,0,"{""1"": 2, ""2"": 6}",HEURISTIC,0.03
+76,cooperative,replenishment_only,100.0,42624,42624,0,0,"{""1"": 2, ""2"": 6}",OPTIMAL,5.99
+76,cooperative,pairwise_only,100.0,42624,42624,0,0,"{""1"": 2, ""2"": 6}",OPTIMAL,4.05
+76,cooperative,shelfloop,100.0,42624,42624,0,0,"{""1"": 2, ""2"": 6}",OPTIMAL,6.18
+77,cooperative,manual,100.0,34689,34689,0,0,"{""1"": 3, ""2"": 7}",HEURISTIC,0.03
+77,cooperative,replenishment_only,100.0,34689,34689,0,0,"{""1"": 3, ""2"": 7}",OPTIMAL,7.63
+77,cooperative,pairwise_only,100.0,34689,34689,0,0,"{""1"": 3, ""2"": 7}",OPTIMAL,5.86
+77,cooperative,shelfloop,100.0,34689,34689,0,0,"{""1"": 3, ""2"": 7}",OPTIMAL,6.38
+78,unfavourable,manual,100.0,24947,24947,0,0,"{""1"": 5, ""2"": 4, ""3"": 4}",HEURISTIC,0.02
+78,unfavourable,replenishment_only,100.0,24947,24947,0,0,"{""1"": 5, ""2"": 4, ""3"": 4}",OPTIMAL,5.0
+78,unfavourable,pairwise_only,100.0,24947,24947,0,0,"{""1"": 5, ""2"": 4, ""3"": 4}",OPTIMAL,4.31
+78,unfavourable,shelfloop,100.0,24947,24947,0,0,"{""1"": 5, ""2"": 4, ""3"": 4}",OPTIMAL,4.93
+79,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",HEURISTIC,0.02
+79,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,2.87
+79,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,3.64
+79,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,3.28
+80,cooperative,manual,100.0,48457,48457,0,0,"{""1"": 4, ""2"": 5, ""3"": 5, ""4"": 7, ""5"": 6, ""6"": 2, ""7"": 6}",HEURISTIC,0.08
+80,cooperative,replenishment_only,100.0,48457,48457,0,0,"{""1"": 4, ""2"": 5, ""3"": 5, ""4"": 7, ""5"": 6, ""6"": 2, ""7"": 6}",OPTIMAL,8.85
+80,cooperative,pairwise_only,100.0,27753,24326,19924,30,"{""1"": 4, ""2"": 5, ""3"": 5, ""4"": 7, ""5"": 6, ""6"": 2, ""7"": 6}",OPTIMAL,29.77
+80,cooperative,shelfloop,100.0,27753,24326,19924,30,"{""1"": 4, ""2"": 5, ""3"": 5, ""4"": 7, ""5"": 6, ""6"": 2, ""7"": 6}",OPTIMAL,46.13
+81,cooperative,manual,100.0,76805,76805,0,0,"{""1"": 5, ""2"": 4, ""3"": 6, ""4"": 4}",HEURISTIC,0.04
+81,cooperative,replenishment_only,100.0,76805,76805,0,0,"{""1"": 5, ""2"": 4, ""3"": 6, ""4"": 4}",OPTIMAL,7.42
+81,cooperative,pairwise_only,100.0,58385,53233,8656,8,"{""1"": 5, ""2"": 4, ""3"": 6, ""4"": 4}",OPTIMAL,11.41
+81,cooperative,shelfloop,100.0,58385,53233,8656,8,"{""1"": 5, ""2"": 4, ""3"": 6, ""4"": 4}",OPTIMAL,11.81
+82,cooperative,manual,100.0,181609,181609,0,0,"{""1"": 7, ""2"": 7, ""3"": 6, ""4"": 5, ""5"": 7, ""6"": 4, ""7"": 6, ""8"": 6}",HEURISTIC,0.06
+82,cooperative,replenishment_only,100.0,181609,181609,0,0,"{""1"": 7, ""2"": 7, ""3"": 6, ""4"": 5, ""5"": 7, ""6"": 4, ""7"": 6, ""8"": 6}",OPTIMAL,8.41
+82,cooperative,pairwise_only,100.0,113279,108840,17551,24,"{""1"": 7, ""2"": 7, ""3"": 6, ""4"": 5, ""5"": 7, ""6"": 4, ""7"": 6, ""8"": 6}",OPTIMAL,18.27
+82,cooperative,shelfloop,100.0,64525,47445,25140,44,"{""1"": 7, ""2"": 7, ""3"": 6, ""4"": 5, ""5"": 7, ""6"": 4, ""7"": 6, ""8"": 6}",OPTIMAL,52.15
+83,unfavourable,manual,100.0,52658,52658,0,0,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 5}",HEURISTIC,0.06
+83,unfavourable,replenishment_only,100.0,52658,52658,0,0,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 5}",OPTIMAL,9.42
+83,unfavourable,pairwise_only,100.0,52658,52658,0,0,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 5}",OPTIMAL,10.88
+83,unfavourable,shelfloop,100.0,52658,52658,0,0,"{""1"": 5, ""2"": 3, ""3"": 3, ""4"": 2, ""5"": 3, ""6"": 4, ""7"": 5, ""8"": 5}",OPTIMAL,9.79
+84,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",HEURISTIC,0.04
+84,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,4.25
+84,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,4.29
+84,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,3.83
+85,cooperative,manual,100.0,49775,49775,0,0,"{""1"": 3, ""2"": 6, ""3"": 3, ""4"": 4, ""5"": 2}",HEURISTIC,0.03
+85,cooperative,replenishment_only,100.0,49775,49775,0,0,"{""1"": 3, ""2"": 6, ""3"": 3, ""4"": 4, ""5"": 2}",OPTIMAL,6.5
+85,cooperative,pairwise_only,100.0,39121,38023,6185,6,"{""1"": 3, ""2"": 6, ""3"": 3, ""4"": 4, ""5"": 2}",OPTIMAL,16.74
+85,cooperative,shelfloop,100.0,39121,38023,6185,6,"{""1"": 3, ""2"": 6, ""3"": 3, ""4"": 4, ""5"": 2}",OPTIMAL,29.12
+86,cooperative,manual,100.0,92627,92627,0,0,"{""1"": 7, ""2"": 6, ""3"": 6, ""4"": 2, ""5"": 3, ""6"": 3, ""7"": 4}",HEURISTIC,0.04
+86,cooperative,replenishment_only,100.0,92627,92627,0,0,"{""1"": 7, ""2"": 6, ""3"": 6, ""4"": 2, ""5"": 3, ""6"": 3, ""7"": 4}",OPTIMAL,9.56
+86,cooperative,pairwise_only,100.0,87091,75239,7892,8,"{""1"": 7, ""2"": 6, ""3"": 6, ""4"": 2, ""5"": 3, ""6"": 3, ""7"": 4}",OPTIMAL,22.92
+86,cooperative,shelfloop,100.0,74474,68070,13639,15,"{""1"": 7, ""2"": 6, ""3"": 6, ""4"": 2, ""5"": 3, ""6"": 3, ""7"": 4}",OPTIMAL,42.4
+87,cooperative,manual,100.0,20546,20546,0,0,"{""1"": 4, ""2"": 2, ""3"": 2}",HEURISTIC,0.04
+87,cooperative,replenishment_only,100.0,20546,20546,0,0,"{""1"": 4, ""2"": 2, ""3"": 2}",OPTIMAL,7.62
+87,cooperative,pairwise_only,100.0,13520,13306,5776,4,"{""1"": 4, ""2"": 2, ""3"": 2}",OPTIMAL,14.58
+87,cooperative,shelfloop,100.0,13520,13306,5776,4,"{""1"": 4, ""2"": 2, ""3"": 2}",OPTIMAL,27.8
+88,unfavourable,manual,100.0,73088,73088,0,0,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 5, ""7"": 2, ""8"": 3}",HEURISTIC,0.06
+88,unfavourable,replenishment_only,100.0,73088,73088,0,0,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 5, ""7"": 2, ""8"": 3}",OPTIMAL,10.34
+88,unfavourable,pairwise_only,100.0,73088,73088,0,0,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 5, ""7"": 2, ""8"": 3}",OPTIMAL,8.79
+88,unfavourable,shelfloop,100.0,73088,73088,0,0,"{""1"": 3, ""2"": 2, ""3"": 2, ""4"": 3, ""5"": 5, ""6"": 5, ""7"": 2, ""8"": 3}",OPTIMAL,10.07
+89,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",HEURISTIC,0.03
+89,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,4.16
+89,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,3.77
+89,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0}",OPTIMAL,3.95
+90,cooperative,manual,100.0,39481,39481,0,0,"{""1"": 4, ""2"": 7, ""3"": 2, ""4"": 7, ""5"": 7, ""6"": 4}",HEURISTIC,0.04
+90,cooperative,replenishment_only,100.0,39481,39481,0,0,"{""1"": 4, ""2"": 7, ""3"": 2, ""4"": 7, ""5"": 7, ""6"": 4}",OPTIMAL,8.18
+90,cooperative,pairwise_only,100.0,38937,36641,7004,8,"{""1"": 4, ""2"": 7, ""3"": 2, ""4"": 7, ""5"": 7, ""6"": 4}",OPTIMAL,19.88
+90,cooperative,shelfloop,100.0,38937,36641,7004,8,"{""1"": 4, ""2"": 7, ""3"": 2, ""4"": 7, ""5"": 7, ""6"": 4}",OPTIMAL,29.66
+91,cooperative,manual,100.0,172895,172895,0,0,"{""1"": 6, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 3, ""6"": 6, ""7"": 4, ""8"": 6}",HEURISTIC,0.04
+91,cooperative,replenishment_only,100.0,172895,172895,0,0,"{""1"": 6, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 3, ""6"": 6, ""7"": 4, ""8"": 6}",OPTIMAL,8.54
+91,cooperative,pairwise_only,100.0,127105,119983,6344,12,"{""1"": 6, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 3, ""6"": 6, ""7"": 4, ""8"": 6}",OPTIMAL,12.4
+91,cooperative,shelfloop,100.0,100821,85473,13864,21,"{""1"": 6, ""2"": 4, ""3"": 2, ""4"": 6, ""5"": 3, ""6"": 6, ""7"": 4, ""8"": 6}",OPTIMAL,17.3
+92,cooperative,manual,100.0,63667,63667,0,0,"{""1"": 4, ""2"": 6, ""3"": 4, ""4"": 6, ""5"": 5, ""6"": 5, ""7"": 4, ""8"": 6}",HEURISTIC,0.04
+92,cooperative,replenishment_only,100.0,63667,63667,0,0,"{""1"": 4, ""2"": 6, ""3"": 4, ""4"": 6, ""5"": 5, ""6"": 5, ""7"": 4, ""8"": 6}",OPTIMAL,8.24
+92,cooperative,pairwise_only,100.0,53043,47643,5996,8,"{""1"": 4, ""2"": 6, ""3"": 4, ""4"": 6, ""5"": 5, ""6"": 5, ""7"": 4, ""8"": 6}",OPTIMAL,25.51
+92,cooperative,shelfloop,100.0,51923,32431,14128,20,"{""1"": 4, ""2"": 6, ""3"": 4, ""4"": 6, ""5"": 5, ""6"": 5, ""7"": 4, ""8"": 6}",OPTIMAL,119.92
+93,unfavourable,manual,100.0,42698,42698,0,0,"{""1"": 3, ""2"": 5, ""3"": 3}",HEURISTIC,0.03
+93,unfavourable,replenishment_only,100.0,42698,42698,0,0,"{""1"": 3, ""2"": 5, ""3"": 3}",OPTIMAL,4.85
+93,unfavourable,pairwise_only,100.0,42698,42698,0,0,"{""1"": 3, ""2"": 5, ""3"": 3}",OPTIMAL,6.15
+93,unfavourable,shelfloop,100.0,42698,42698,0,0,"{""1"": 3, ""2"": 5, ""3"": 3}",OPTIMAL,5.34
+94,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",HEURISTIC,0.01
+94,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,2.6
+94,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,2.88
+94,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0}",OPTIMAL,3.86
+95,cooperative,manual,100.0,111824,111824,0,0,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 6}",HEURISTIC,0.03
+95,cooperative,replenishment_only,100.0,111824,111824,0,0,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 6}",OPTIMAL,5.14
+95,cooperative,pairwise_only,100.0,72239,62719,6875,10,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 6}",OPTIMAL,15.86
+95,cooperative,shelfloop,100.0,72239,62719,6875,10,"{""1"": 5, ""2"": 4, ""3"": 5, ""4"": 6}",OPTIMAL,15.3
+96,cooperative,manual,100.0,28086,28086,0,0,"{""1"": 2, ""2"": 4, ""3"": 4}",HEURISTIC,0.04
+96,cooperative,replenishment_only,100.0,28086,28086,0,0,"{""1"": 2, ""2"": 4, ""3"": 4}",OPTIMAL,5.39
+96,cooperative,pairwise_only,100.0,26712,25972,6538,4,"{""1"": 2, ""2"": 4, ""3"": 4}",OPTIMAL,9.05
+96,cooperative,shelfloop,100.0,19816,18664,6960,6,"{""1"": 2, ""2"": 4, ""3"": 4}",OPTIMAL,15.97
+97,cooperative,manual,100.0,28677,28677,0,0,"{""1"": 3, ""2"": 4, ""3"": 6}",HEURISTIC,0.04
+97,cooperative,replenishment_only,100.0,28677,28677,0,0,"{""1"": 3, ""2"": 4, ""3"": 6}",OPTIMAL,5.21
+97,cooperative,pairwise_only,100.0,24263,15170,6686,6,"{""1"": 3, ""2"": 4, ""3"": 6}",OPTIMAL,6.32
+97,cooperative,shelfloop,100.0,24263,15170,6686,6,"{""1"": 3, ""2"": 4, ""3"": 6}",OPTIMAL,9.17
+98,unfavourable,manual,100.0,111224,111224,0,0,"{""1"": 3, ""2"": 5, ""3"": 5, ""4"": 2, ""5"": 2, ""6"": 5, ""7"": 4, ""8"": 5}",HEURISTIC,0.05
+98,unfavourable,replenishment_only,100.0,111224,111224,0,0,"{""1"": 3, ""2"": 5, ""3"": 5, ""4"": 2, ""5"": 2, ""6"": 5, ""7"": 4, ""8"": 5}",OPTIMAL,8.23
+98,unfavourable,pairwise_only,100.0,111224,111224,0,0,"{""1"": 3, ""2"": 5, ""3"": 5, ""4"": 2, ""5"": 2, ""6"": 5, ""7"": 4, ""8"": 5}",OPTIMAL,7.77
+98,unfavourable,shelfloop,100.0,111224,111224,0,0,"{""1"": 3, ""2"": 5, ""3"": 5, ""4"": 2, ""5"": 2, ""6"": 5, ""7"": 4, ""8"": 5}",OPTIMAL,7.56
+99,impossible,manual,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",HEURISTIC,0.03
+99,impossible,replenishment_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.94
+99,impossible,pairwise_only,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,4.17
+99,impossible,shelfloop,0.0,0,0,0,0,"{""1"": 0, ""2"": 0, ""3"": 0, ""4"": 0, ""5"": 0, ""6"": 0, ""7"": 0, ""8"": 0}",OPTIMAL,2.92

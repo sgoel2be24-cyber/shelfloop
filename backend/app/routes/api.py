@@ -1,13 +1,16 @@
 """HTTP surface. Server-side authorisation: owners act only on their own shop;
 operators run planning/sandbox/dispatch but can never approve on an owner's behalf."""
 import json
+import hashlib
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, File, Form, UploadFile
 
 from .. import capture as capture_mod
+from ..capture_media import extract_invoice, transcribe_audio, capabilities, CaptureMediaError
+from ..request_models import NeedRequest, InventoryRequest, CaptureRequest, QuoteRequest, PlanningRequest, ShopPreferences
 from .. import db, lifecycle, sandbox, seed as seed_mod
 from ..config import CASE_ID, DEFAULT_RADIUS_KM, DEFAULT_TIME_LIMIT_MS, OPERATOR_PIN, OWNER_PIN
 from ..planner import build_context, enumerate_cycles, plan as run_plan
@@ -42,6 +45,47 @@ def require_owner_of(actor: dict, shop_id: int):
         raise HTTPException(403, "owner token for this shop required")
 
 
+def require_operator(actor):
+    if actor["role"] != "operator":
+        raise HTTPException(403, "operator role required")
+
+
+def require_shop_access(actor, shop_id):
+    if actor["role"] == "owner":
+        require_owner_of(actor, shop_id)
+
+
+def require_plan_access(actor, row):
+    if actor["role"] == "owner" and actor["shop_id"] not in db.jload(row["participants"], []):
+        raise HTTPException(403, "this plan does not include your shop")
+
+
+def scoped_idempotency(actor, operation, key):
+    if len(key) > 200:
+        raise HTTPException(422, "idempotency key is too long")
+    return f"{actor['role']}:{actor['shop_id']}:{operation}:{key}" if key else None
+
+
+def cached_write(conn, key, body):
+    if not key:
+        return None
+    row = conn.execute("SELECT response FROM idempotency WHERE key=?", (key,)).fetchone()
+    if not row:
+        return None
+    stored = db.jload(row["response"], {})
+    fingerprint = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+    if stored.get("_fingerprint") != fingerprint:
+        raise HTTPException(409, "idempotency key was already used with different input")
+    return stored["response"]
+
+
+def remember_write(conn, key, body, response):
+    if key:
+        fingerprint = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+        conn.execute("INSERT INTO idempotency(key,response,created_at) VALUES (?,?,?)",
+                     (key, json.dumps({"_fingerprint": fingerprint, "response": response}), db.now_iso()))
+
+
 # ---------- session ----------
 
 @router.post("/session")
@@ -59,6 +103,8 @@ def create_session(body: dict, conn=Depends(get_conn)):
             raise HTTPException(401, "wrong owner PIN")
     else:
         raise HTTPException(400, "role must be owner or operator")
+    if role == "owner" and not conn.execute("SELECT id FROM shops WHERE id=?", (shop_id,)).fetchone():
+        raise HTTPException(404, "shop not found")
     token = uuid.uuid4().hex
     with db.tx(conn):
         conn.execute("INSERT INTO sessions(token, role, shop_id, created_at) VALUES (?,?,?,?)",
@@ -74,6 +120,7 @@ def create_session(body: dict, conn=Depends(get_conn)):
 def health(conn=Depends(get_conn)):
     return {"ok": True, "shops": conn.execute("SELECT COUNT(*) c FROM shops").fetchone()["c"],
             "products": conn.execute("SELECT COUNT(*) c FROM products").fetchone()["c"],
+            "capture_capabilities": capabilities(),
             "open_reservations": conn.execute(
                 "SELECT COUNT(*) c FROM reservations WHERE status='active'").fetchone()["c"]}
 
@@ -86,10 +133,11 @@ def shops(conn=Depends(get_conn), authorization: str = Header(default="")):
         authed = True
     except HTTPException:
         authed = False
+        actor = None
     rows = []
     for r in conn.execute("SELECT * FROM shops ORDER BY id"):
         d = dict(r)
-        if not authed:
+        if not authed or (actor["role"] == "owner" and actor["shop_id"] != d["id"]):
             d.pop("cash_limit_paise", None)
         rows.append(d)
     return rows
@@ -108,6 +156,7 @@ def products(conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/shops/{shop_id}/stock")
 def shop_stock(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
     rows = []
     q = """SELECT l.*, p.name product_name, p.name_hi product_name_hi, p.emoji, p.unit, p.pack_size
            FROM stock_lots l JOIN products p ON p.id=l.product_id WHERE l.shop_id=? ORDER BY p.name"""
@@ -116,6 +165,7 @@ def shop_stock(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
         (db.now_iso(),))}
     for r in conn.execute(q, (shop_id,)):
         d = dict(r)
+        d["lot_id"] = d["id"]
         d["reserved_qty"] = reserved.get(d["id"], 0)
         d["available_qty"] = max(0, d["qty"] - d["retained_floor"] - d["reserved_qty"])
         d["permit_share"] = bool(d["permit_share"])
@@ -128,6 +178,7 @@ def shop_stock(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/shops/{shop_id}/needs")
 def shop_needs(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
     rows = []
     q = """SELECT n.*, p.name product_name, p.name_hi product_name_hi, p.emoji
            FROM needs n JOIN products p ON p.id=n.product_id
@@ -151,10 +202,16 @@ def supplier_quotes(product_id: int | None = None, conn=Depends(get_conn), actor
 # ---------- owner-confirmed writes ----------
 
 @router.post("/needs")
-def add_need(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
+def add_need(body: NeedRequest, conn=Depends(get_conn), actor=Depends(auth)):
+    body = body.model_dump()
     shop_id = body["shop_id"]
     if actor["role"] == "owner":
         require_owner_of(actor, shop_id)
+    if not conn.execute("SELECT id FROM shops WHERE id=?", (shop_id,)).fetchone():
+        raise HTTPException(404, "shop not found")
+    for pid in [body["product_id"], *body.get("alt_product_ids", [])]:
+        if not conn.execute("SELECT id FROM products WHERE id=?", (pid,)).fetchone():
+            raise HTTPException(404, "product not found")
     with db.tx(conn):
         cur = conn.execute(
             "INSERT INTO needs(shop_id, product_id, qty, urgency, alt_product_ids, budget_paise,"
@@ -180,7 +237,11 @@ def remove_need(need_id: int, conn=Depends(get_conn), actor=Depends(auth)):
 
 
 @router.post("/supplier-quotes")
-def add_quote(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
+def add_quote(body: QuoteRequest, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
+    body = body.model_dump()
+    if not conn.execute("SELECT id FROM products WHERE id=?", (body["product_id"],)).fetchone():
+        raise HTTPException(404, "product not found")
     with db.tx(conn):
         cur = conn.execute(
             "INSERT INTO supplier_quotes(product_id, supplier_name, price_paise, min_order_packs, lead_days)"
@@ -191,70 +252,110 @@ def add_quote(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
 
 
 @router.post("/inventory/confirm")
-def inventory_confirm(body: dict, conn=Depends(get_conn), actor=Depends(auth),
+def inventory_confirm(body: InventoryRequest, conn=Depends(get_conn), actor=Depends(auth),
                       idempotency_key: str = Header(default="")):
+    body = body.model_dump(exclude_none=True)
     shop_id = body["shop_id"]
-    if actor["role"] == "owner":
-        require_owner_of(actor, shop_id)
-    if idempotency_key:
-        cached = conn.execute("SELECT response FROM idempotency WHERE key=?",
-                              (idempotency_key,)).fetchone()
-        if cached:
-            return db.jload(cached["response"], {})
-    applied, shop_version = [], 1
+    require_shop_access(actor, shop_id)
+    key = scoped_idempotency(actor, f"inventory:{shop_id}", idempotency_key)
     with db.tx(conn):
-        for ch in body.get("changes", []):
+        cached = cached_write(conn, key, body)
+        if cached is not None:
+            return cached
+        if not conn.execute("SELECT id FROM shops WHERE id=?", (shop_id,)).fetchone():
+            raise HTTPException(404, "shop not found")
+        applied = []
+        for ch in body["changes"]:
             pid = ch["product_id"]
+            if not conn.execute("SELECT id FROM products WHERE id=?", (pid,)).fetchone():
+                raise HTTPException(404, "product not found")
             if ch.get("lot_id"):
                 lot = conn.execute("SELECT * FROM stock_lots WHERE id=? AND shop_id=?",
                                    (ch["lot_id"], shop_id)).fetchone()
-                if not lot:
-                    raise HTTPException(404, f"lot {ch['lot_id']} not in shop {shop_id}")
-                delta = ch.get("delta")
-                if ch.get("qty") is not None:
-                    delta = ch["qty"] - lot["qty"]
+                if not lot or lot["product_id"] != pid:
+                    raise HTTPException(404, "lot/product does not belong to this shop")
+                if ch["expected_version"] != lot["version"]:
+                    raise HTTPException(409, "stock changed; refresh before confirming")
+                new_qty = ch.get("qty", lot["qty"] + ch.get("delta", 0))
+                floor = ch.get("retained_floor", lot["retained_floor"])
+                if new_qty < 0 or floor > new_qty:
+                    raise HTTPException(422, "quantity must be non-negative and cover the retained floor")
+                if ch.get("permit_share", lot["permit_share"]) and (
+                        ch.get("cost_paise", lot["cost_paise"]) <= 0 or
+                        not ch.get("expiry_date", lot["expiry_date"])):
+                    raise HTTPException(422, "confirm purchase cost and label date before sharing this lot")
+                delta = new_qty - lot["qty"]
                 conn.execute(
-                    "UPDATE stock_lots SET qty=qty+?, expiry_date=COALESCE(?, expiry_date),"
-                    " condition=COALESCE(?, condition), permit_share=COALESCE(?, permit_share),"
-                    " slow=COALESCE(?, slow), retained_floor=COALESCE(?, retained_floor),"
-                    " version=version+1, updated_at=? WHERE id=?",
-                    (delta or 0, ch.get("expiry_date"), ch.get("condition"),
-                     None if ch.get("permit_share") is None else int(ch["permit_share"]),
-                     None if ch.get("slow") is None else int(ch["slow"]),
-                     ch.get("retained_floor"), db.now_iso(), ch["lot_id"]))
+                    "UPDATE stock_lots SET qty=?,cost_paise=COALESCE(?,cost_paise),"
+                    " expiry_date=COALESCE(?,expiry_date),condition=COALESCE(?,condition),"
+                    " permit_share=COALESCE(?,permit_share),slow=COALESCE(?,slow),"
+                    " retained_floor=?,version=version+1,updated_at=? WHERE id=?",
+                    (new_qty, ch.get("cost_paise"), ch.get("expiry_date"), ch.get("condition"),
+                     ch.get("permit_share"), ch.get("slow"), floor, db.now_iso(), ch["lot_id"]))
                 lot_id = ch["lot_id"]
             else:
-                product = conn.execute("SELECT mrp_paise FROM products WHERE id=?", (pid,)).fetchone()
+                qty, floor = ch["qty"], ch.get("retained_floor", 0)
+                if floor > qty:
+                    raise HTTPException(422, "retained floor exceeds quantity")
+                if ch.get("permit_share") and (ch.get("cost_paise", 0) <= 0 or not ch.get("expiry_date")):
+                    raise HTTPException(422, "confirm purchase cost and label date before sharing this lot")
                 cur = conn.execute(
-                    "INSERT INTO stock_lots(shop_id, product_id, qty, cost_paise, expiry_date, condition,"
-                    " permit_share, slow, retained_floor, version, created_at, updated_at)"
-                    " VALUES (?,?,?,?,?,'sealed',?,0,?,1,?,?)",
-                    (shop_id, pid, ch.get("qty", 0), ch.get("cost_paise",
-                     int((product["mrp_paise"] if product else 1000) * 0.9)),
-                     ch.get("expiry_date"),
-                     1 if ch.get("permit_share") is None else int(ch["permit_share"]),
-                     ch.get("retained_floor", 0), db.now_iso(), db.now_iso()))
-                lot_id, delta = cur.lastrowid, ch.get("qty", 0)
+                    "INSERT INTO stock_lots(shop_id,product_id,qty,cost_paise,expiry_date,condition,"
+                    "permit_share,slow,retained_floor,version,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,1,?,?)",
+                    (shop_id,pid,qty,ch.get("cost_paise",0),ch.get("expiry_date"),ch.get("condition","sealed"),
+                     int(ch.get("permit_share",False)),int(ch.get("slow",False)),floor,db.now_iso(),db.now_iso()))
+                lot_id, delta = cur.lastrowid, qty
             conn.execute(
-                "INSERT INTO inventory_log(shop_id, lot_id, product_id, delta, reason, actor, source, ts)"
-                " VALUES (?,?,?,?,?,?, 'confirm', ?)",
-                (shop_id, lot_id, pid, delta or 0, body.get("reason", "owner confirm"),
-                 actor["role"], db.now_iso()))
-            applied.append({"lot_id": lot_id, "product_id": pid, "delta": delta or 0})
-        shop_version = conn.execute("SELECT version FROM shops WHERE id=?", (shop_id,)).fetchone()["version"]
-        db.log_event(conn, actor["role"], "inventory.confirmed", "shop", shop_id, {"changes": applied})
-    resp = {"applied": applied, "shop_version": shop_version}
-    if idempotency_key:
-        with db.tx(conn):
-            conn.execute("INSERT OR IGNORE INTO idempotency(key, response, created_at) VALUES (?,?,?)",
-                         (idempotency_key, json.dumps(resp), db.now_iso()))
-    return resp
+                "INSERT INTO inventory_log(shop_id,lot_id,product_id,delta,reason,actor,source,ts)"
+                " VALUES (?,?,?,?,?,?,'confirm',?)",
+                (shop_id,lot_id,pid,delta,body["reason"],actor["role"],db.now_iso()))
+            applied.append({"lot_id":lot_id,"product_id":pid,"delta":delta})
+        conn.execute("UPDATE shops SET version=version+1 WHERE id=?", (shop_id,))
+        version = conn.execute("SELECT version FROM shops WHERE id=?", (shop_id,)).fetchone()["version"]
+        db.log_event(conn,actor["role"],"inventory.confirmed","shop",shop_id,{"changes":applied})
+        response = {"applied":applied,"shop_version":version}
+        remember_write(conn,key,body,response)
+    return response
+
+
+@router.patch("/shops/{shop_id}/preferences")
+def shop_preferences(shop_id: int, body: ShopPreferences, conn=Depends(get_conn), actor=Depends(auth)):
+    require_owner_of(actor, shop_id)
+    with db.tx(conn):
+        shop = conn.execute("SELECT * FROM shops WHERE id=?", (shop_id,)).fetchone()
+        if not shop:
+            raise HTTPException(404, "shop not found")
+        held = conn.execute("SELECT COALESCE(SUM(amount_paise),0) amount FROM cash_reservations WHERE shop_id=? AND status IN ('active','pending_operator')", (shop_id,)).fetchone()["amount"]
+        if body.cash_limit_paise < held:
+            raise HTTPException(409, "cash limit cannot be lower than existing plan holds")
+        if shop["version"] != body.expected_version:
+            raise HTTPException(409, "shop changed; refresh before saving preferences")
+        conn.execute("UPDATE shops SET cash_limit_paise=?,sharing_opt_in=?,version=version+1 WHERE id=?",
+                     (body.cash_limit_paise,int(body.sharing_opt_in),shop_id))
+        db.log_event(conn,f"owner:{shop_id}","shop.preferences","shop",shop_id,
+                     {"cash_limit_paise":body.cash_limit_paise,"sharing_opt_in":body.sharing_opt_in})
+    return {"shop_id":shop_id,"version":shop["version"]+1,"cash_limit_paise":body.cash_limit_paise,
+            "sharing_opt_in":body.sharing_opt_in}
+
+
+@router.get("/shops/{shop_id}/preferences")
+def read_shop_preferences(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
+    lifecycle.sweep_expired(conn)
+    shop = conn.execute("SELECT * FROM shops WHERE id=?", (shop_id,)).fetchone()
+    if not shop:
+        raise HTTPException(404, "shop not found")
+    held = conn.execute("SELECT COALESCE(SUM(amount_paise),0) amount FROM cash_reservations "
+                        "WHERE shop_id=? AND status IN ('active','pending_operator')", (shop_id,)).fetchone()["amount"]
+    return {"shop_id":shop_id,"version":shop["version"],"cash_limit_paise":shop["cash_limit_paise"],
+            "sharing_opt_in":bool(shop["sharing_opt_in"]),"held_cash_paise":held}
 
 
 # ---------- capture ----------
 
 @router.post("/captures")
-def create_capture(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
+def create_capture(body: CaptureRequest, conn=Depends(get_conn), actor=Depends(auth)):
+    body = body.model_dump()
     shop_id = body["shop_id"]
     if actor["role"] == "owner":
         require_owner_of(actor, shop_id)
@@ -269,19 +370,43 @@ def create_capture(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
     return {"capture_id": cur.lastrowid, **result}
 
 
+def _media_capture(conn, actor, shop_id, file_data, filename, content_type, modality):
+    require_shop_access(actor, shop_id)
+    if not conn.execute("SELECT id FROM shops WHERE id=?", (shop_id,)).fetchone():
+        raise HTTPException(404, "shop not found")
+    try:
+        extracted = (transcribe_audio if modality == "audio" else extract_invoice)(file_data, filename, content_type)
+    except CaptureMediaError as exc:
+        if exc.code != "unavailable":
+            raise HTTPException(413 if exc.code == "too_large" else 422, str(exc))
+        return {"capture_id":None,"status":"failed","proposals":[],"questions":[str(exc)],
+                "engine":modality,"fallback":"manual-form","warnings":[str(exc)]}
+    result = capture_mod.parse_capture(conn, extracted["text"])
+    result["warnings"] = extracted.get("warnings", [])
+    result["source_engine"] = extracted["engine"]
+    with db.tx(conn):
+        cur = conn.execute(
+            "INSERT INTO captures(shop_id,modality,raw_text,extracted,status,created_at) VALUES (?,?,?,?,?,?)",
+            (shop_id,modality,extracted["text"],json.dumps(result),result["status"],db.now_iso()))
+        db.log_event(conn,actor["role"],"capture.created","capture",cur.lastrowid,
+                     {"status":result["status"],"engine":extracted["engine"]})
+    return {"capture_id":cur.lastrowid,**result}
+
+
 @router.post("/captures/audio")
-async def capture_audio(conn=Depends(get_conn), actor=Depends(auth)):
-    # Local Faster-Whisper is optional; when absent the contract's manual-form fallback applies.
-    return {"capture_id": None, "status": "failed", "proposals": [], "questions": [],
-            "engine": "speech", "fallback": "manual-form",
-            "questions_extra": ["Speech model not loaded in this demo; use the form."]}
+def capture_audio(shop_id: int = Form(...), file: UploadFile = File(...),
+                  conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
+    data = file.file.read(8 * 1024 * 1024 + 1)
+    return _media_capture(conn,actor,shop_id,data,file.filename or "",file.content_type or "","audio")
 
 
 @router.post("/captures/invoice")
-async def capture_invoice(conn=Depends(get_conn), actor=Depends(auth)):
-    return {"capture_id": None, "status": "failed", "proposals": [], "questions": [],
-            "engine": "ocr", "fallback": "manual-form",
-            "questions_extra": ["Invoice OCR not loaded in this demo; enter items manually."]}
+def capture_invoice(shop_id: int = Form(...), file: UploadFile = File(...),
+                    conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
+    data = file.file.read(8 * 1024 * 1024 + 1)
+    return _media_capture(conn,actor,shop_id,data,file.filename or "",file.content_type or "","invoice")
 
 
 @router.post("/captures/{capture_id}/confirm")
@@ -292,20 +417,15 @@ def confirm_capture(capture_id: int, body: dict, conn=Depends(get_conn), actor=D
         raise HTTPException(404, "capture not found")
     if actor["role"] == "owner":
         require_owner_of(actor, cap["shop_id"])
-    if idempotency_key:
-        cached = conn.execute("SELECT response FROM idempotency WHERE key=?",
-                              (idempotency_key,)).fetchone()
-        if cached:
-            return db.jload(cached["response"], {})
+    key = scoped_idempotency(actor, f"capture:{capture_id}", idempotency_key)
+    cached = cached_write(conn, key, body)
+    if cached is not None:
+        return cached
     try:
-        resp = capture_mod.confirm_capture(conn, capture_id, body.get("edits", []),
-                                           actor["role"])
+        resp = capture_mod.confirm_capture(conn, capture_id, body.get("edits", []), actor["role"],
+                                           idempotency_key=key, request_body=body)
     except ValueError as e:
         raise HTTPException(409, str(e))
-    if idempotency_key:
-        with db.tx(conn):
-            conn.execute("INSERT OR IGNORE INTO idempotency(key, response, created_at) VALUES (?,?,?)",
-                         (idempotency_key, json.dumps(resp), db.now_iso()))
     return resp
 
 
@@ -317,13 +437,32 @@ def _execute_run(run_id: int, case_id: str, params: dict):
         with db.tx(conn):
             conn.execute("UPDATE planning_runs SET status='running' WHERE id=?", (run_id,))
         t0 = __import__("time").perf_counter()
-        ctx = build_context(conn, params)
+        # Keep solver inputs and their provenance in the same short snapshot.
+        # Never stamp old solver output with versions read *after* solving.
+        with db.tx(conn):
+            ctx = build_context(conn, params)
+            source_shops = {r["id"]: dict(r) for r in conn.execute("SELECT * FROM shops")}
+            source_lots = [dict(r) for r in conn.execute("SELECT * FROM stock_lots")]
+            source_needs = {r["id"]: dict(r) for r in conn.execute("SELECT * FROM needs")}
+            source_quotes = [dict(r) for r in conn.execute("SELECT * FROM supplier_quotes")]
         cycles = enumerate_cycles(ctx)
         proposal = run_plan(ctx, cycles, params)
+        participants = set(proposal.get("participants", []))
+        exchanged = {(leg["from_shop"], leg["product_id"]) for c in proposal.get("cycles", []) for leg in c["legs"]}
+        need_ids = {c["need_id"] for c in proposal.get("coverage", []) if c.get("qty_covered", 0) > 0}
+        quote_ids = {q["id"] for q in source_quotes for p in proposal.get("purchases", [])
+                     if q["product_id"] == p["product_id"] and q["price_paise"] == p["unit_price_paise"]
+                     and q["min_order_packs"] <= p["qty"]}
+        proposal["input_versions"] = {
+            "shops": {str(s): source_shops[s]["version"] for s in participants},
+            "lots": {str(r["id"]): r["version"] for r in source_lots if (r["shop_id"],r["product_id"]) in exchanged},
+            "needs": {str(n): source_needs[n] for n in need_ids},
+            "quotes": {str(q["id"]): q for q in source_quotes if q["id"] in quote_ids},
+        }
         elapsed = int((__import__("time").perf_counter() - t0) * 1000)
         with db.tx(conn):
             plan_id = None
-            if proposal["solver"].get("objective") is not None and proposal["cycles"] or proposal["purchases"]:
+            if proposal["cycles"] or proposal["purchases"]:
                 plan_id = lifecycle.create_plan(conn, case_id, run_id, proposal)
                 db.log_event(conn, "agent", "plan.proposed", "plan", plan_id,
                              {"solver": proposal["solver"]})
@@ -340,7 +479,8 @@ def _execute_run(run_id: int, case_id: str, params: dict):
 
 
 @router.post("/planning-runs")
-def start_run(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
+def start_run(body: PlanningRequest, conn=Depends(get_conn), actor=Depends(auth)):
+    body = body.model_dump()
     if actor["role"] != "operator":
         raise HTTPException(403, "operator role required")
     case_id = body.get("case_id", CASE_ID)
@@ -361,6 +501,7 @@ def start_run(body: dict, conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/planning-runs/{run_id}")
 def get_run(run_id: int, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     lifecycle.sweep_expired(conn)
     run = conn.execute("SELECT * FROM planning_runs WHERE id=?", (run_id,)).fetchone()
     if not run:
@@ -381,12 +522,16 @@ def get_run(run_id: int, conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/shops/{shop_id}/plans")
 def shop_plans(shop_id: int, limit: int = 20, conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
+    limit = min(100, max(1, limit))
     lifecycle.sweep_expired(conn)
     rows = []
     for p in conn.execute("SELECT * FROM plans ORDER BY id DESC LIMIT 200"):
         participants = db.jload(p["participants"], [])
         if shop_id not in participants:
             continue
+        if len(rows) >= limit:
+            break
         prop = db.jload(p["proposal"], {})
         rows.append({
             "id": p["id"], "version": p["version"], "status": p["status"],
@@ -396,8 +541,15 @@ def shop_plans(shop_id: int, limit: int = 20, conn=Depends(get_conn), actor=Depe
             "coverage": prop.get("coverage", []), "costs": prop.get("costs", {}),
             "assumptions": prop.get("assumptions", []), "solver": prop.get("solver"),
             "why_not": prop.get("why_not"),
+            "approval_history": _approval_history(conn, p),
         })
     return rows
+
+
+def _approval_history(conn, plan):
+    # A plan row is immutable; material changes create a new plan/version.
+    return [{**dict(row), "at": row["decided_at"], "inputs_hash": plan["inputs_hash"]}
+            for row in conn.execute("SELECT * FROM approvals WHERE plan_id=? ORDER BY id", (plan["id"],))]
 
 
 # ---------- cluster analytics ----------
@@ -418,6 +570,7 @@ def _plan_totals(prop: dict) -> dict:
 
 @router.get("/cases/{case_id}/summary")
 def case_summary(case_id: str, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     """Cluster KPIs for the operator dashboard."""
     from datetime import date as _date, datetime as _dt
 
@@ -469,6 +622,7 @@ def case_summary(case_id: str, conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/cases/{case_id}/directory")
 def case_directory(case_id: str, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     """One batched query for the operator directory: per-shop lot/need/value counts.
     Replaces N×2 per-shop fetches in the dashboard."""
     shops = {}
@@ -500,6 +654,7 @@ def case_directory(case_id: str, conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/shops/{shop_id}/pulse")
 def shop_pulse(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
     """Owner-facing 'my shelf today' aggregates for one shop."""
     from datetime import date as _date
 
@@ -531,6 +686,7 @@ def shop_pulse(shop_id: int, conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/shops/{shop_id}/expiry-actions")
 def expiry_actions(shop_id: int, within_days: int = 60, conn=Depends(get_conn), actor=Depends(auth)):
+    require_shop_access(actor, shop_id)
     """Advisory only: near-expiry lots and what could absorb them. Never a safety claim."""
     from datetime import date as _date
 
@@ -566,6 +722,7 @@ def expiry_actions(shop_id: int, within_days: int = 60, conn=Depends(get_conn), 
 
 @router.get("/cases/{case_id}/plans")
 def case_plan_history(case_id: str, limit: int = 30, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     """Version history of plans for the case, newest first."""
     lifecycle.sweep_expired(conn)
     rows = []
@@ -585,11 +742,12 @@ def get_plan(plan_id: int, conn=Depends(get_conn), actor=Depends(auth)):
     plan = conn.execute("SELECT * FROM plans WHERE id=?", (plan_id,)).fetchone()
     if not plan:
         raise HTTPException(404, "plan not found")
+    require_plan_access(actor, plan)
     prop = db.jload(plan["proposal"], {})
-    approvals = [dict(r) for r in conn.execute(
-        "SELECT * FROM approvals WHERE plan_id=? ORDER BY id", (plan_id,))]
+    approvals = _approval_history(conn, plan)
     return {**prop, "id": plan_id, "case_id": plan["case_id"], "version": plan["version"],
             "status": plan["status"], "created_at": plan["created_at"],
+            "approval_expires_at": plan["approval_expires_at"],
             "inputs_hash": plan["inputs_hash"], "participants": db.jload(plan["participants"], []),
             "supersedes_id": plan["supersedes_id"], "approval_history": approvals}
 
@@ -600,6 +758,7 @@ def plan_status(plan_id: int, conn=Depends(get_conn), actor=Depends(auth)):
     plan = conn.execute("SELECT * FROM plans WHERE id=?", (plan_id,)).fetchone()
     if not plan:
         raise HTTPException(404, "plan not found")
+    require_plan_access(actor, plan)
     participants = db.jload(plan["participants"], [])
     approvals = [dict(r) for r in conn.execute("SELECT * FROM approvals WHERE plan_id=?", (plan_id,))]
     approved_shops = [a["shop_id"] for a in approvals if a["decision"] == "approved"]
@@ -610,12 +769,14 @@ def plan_status(plan_id: int, conn=Depends(get_conn), actor=Depends(auth)):
     actions = [dict(r) for r in conn.execute(
         "SELECT * FROM sandbox_actions WHERE plan_id=? ORDER BY seq", (plan_id,))]
     return {"status": plan["status"], "version": plan["version"], "inputs_hash": plan["inputs_hash"],
+            "approval_expires_at": plan["approval_expires_at"],
             "approvals": approvals, "approvals_missing": [s for s in participants if s not in approved_shops],
             "reservations": reservations, "sandbox_actions": actions}
 
 
 @router.post("/plans/{plan_id}/submit")
 def submit_plan(plan_id: int, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     try:
         return lifecycle.submit_for_approval(conn, plan_id, actor["role"])
     except lifecycle.Conflict as e:
@@ -687,6 +848,7 @@ def sandbox_reset(conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/sandbox/state")
 def sandbox_state(conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     return sandbox.get_state(conn)
 
 
@@ -694,6 +856,8 @@ def sandbox_state(conn=Depends(get_conn), actor=Depends(auth)):
 
 @router.get("/cases/{case_id}/events")
 def case_events(case_id: str, limit: int = 200, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
+    limit = min(1000, max(1, limit))
     rows = conn.execute("SELECT * FROM audit_events ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
     return [{"id": r["id"], "ts": r["ts"], "actor": r["actor"], "event_type": r["event_type"],
              "ref_type": r["ref_type"], "ref_id": r["ref_id"],
@@ -702,6 +866,7 @@ def case_events(case_id: str, limit: int = 200, conn=Depends(get_conn), actor=De
 
 @router.get("/cases/{case_id}/export")
 def case_export(case_id: str, conn=Depends(get_conn), actor=Depends(auth)):
+    require_operator(actor)
     plans = []
     for p in conn.execute("SELECT * FROM plans WHERE case_id=? ORDER BY id", (case_id,)):
         prop = db.jload(p["proposal"], {})

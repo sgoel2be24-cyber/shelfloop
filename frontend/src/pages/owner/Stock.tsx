@@ -7,6 +7,7 @@ import { useAsyncData } from '../../lib/useAsyncData'
 import { useSession } from '../../state/Session'
 import { useToast } from '../../state/Toast'
 import { CaptureComposer } from './CaptureComposer'
+import { StockLotEditor } from './StockLotEditor'
 
 function ExpiryCell({ lot }: { lot: Lot }) {
   const { t } = useI18n()
@@ -89,6 +90,7 @@ export default function Stock() {
           {
             lot_id: lot.lot_id,
             product_id: lot.product_id,
+            expected_version: lot.version,
             ...(change.permit_share !== undefined ? { permit_share: change.permit_share } : {}),
             ...(change.slow !== undefined ? { slow: change.slow } : {}),
             ...(change.retained_floor !== undefined ? { retained_floor: change.retained_floor } : {}),
@@ -132,8 +134,16 @@ export default function Stock() {
 
       {lots && lots.length === 0 && <div className="card p-5 text-sm text-ink/70">{t('stock.empty')}</div>}
 
+      {lots && lots.length > 0 && <div className="space-y-3 md:hidden">
+        {lots.map(lot => <article key={lot.lot_id+'-'+lot.version} className="card p-4">
+          <div className="flex items-start justify-between gap-3"><div><h2 className="text-sm font-semibold">{lang === 'hi' ? lot.product_name_hi || lot.product_name : lot.product_name}</h2><p className="mt-1 text-xs text-ink/55">{lot.cost_paise > 0 ? formatMoney(lot.cost_paise,lang) : (lang === 'hi' ? 'लागत की पुष्टि बाकी' : 'Cost not confirmed')}</p></div><span className="rounded-xl bg-brand/5 px-3 py-2 text-xl font-semibold tabular text-brand">{lot.qty}</span></div>
+          <div className="mt-3 flex items-center justify-between text-xs"><ExpiryCell lot={lot}/><span>{lot.available_qty} {lang === 'hi' ? 'उपलब्ध' : 'available'} · {lot.reserved_qty} {lang === 'hi' ? 'होल्ड' : 'held'}</span></div>
+          <div className="mt-4 flex flex-wrap gap-2"><Switch on={lot.permit_share} label={t('stock.share')} hint={t('stock.shareHint')} disabled={busyLot === lot.lot_id} onChange={next=>void patchLot(lot,{permit_share:next},t('stock.saved'))}/><Switch on={lot.slow} label={t('stock.slow')} hint={t('stock.slowHint')} disabled={busyLot === lot.lot_id} onChange={next=>void patchLot(lot,{slow:next},t('stock.saved'))}/></div>
+          <StockLotEditor lot={lot} shopId={shopId} onSaved={reload}/>
+        </article>)}
+      </div>}
       {lots && lots.length > 0 && (
-        <div className="card overflow-x-auto">
+        <div className="card hidden overflow-x-auto md:block">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
               <tr className="border-b border-ink/10 text-xs uppercase tracking-wide text-ink/50">
@@ -157,7 +167,8 @@ export default function Stock() {
                       </span>
                       <div>
                         <div className="font-semibold">{lot.product_name}</div>
-                        <div className="tabular text-xs text-ink/50">{formatMoney(lot.cost_paise, lang)}</div>
+                        <div className="tabular text-xs text-ink/50">{lot.cost_paise > 0 ? formatMoney(lot.cost_paise, lang) : (lang === 'hi' ? 'लागत अज्ञात' : 'Cost unknown')}</div>
+                        <StockLotEditor key={lot.version} lot={lot} shopId={shopId} onSaved={reload}/>
                       </div>
                     </div>
                   </td>

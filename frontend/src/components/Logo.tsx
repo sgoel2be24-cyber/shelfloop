@@ -1,17 +1,16 @@
-/** ShelfLoop mark: a hand-drawn wire basket with a loop of stock — slightly
- * wobbly strokes on purpose, drawn as plain SVG so it needs no asset files. */
+/** Lightweight local mark; no network assets required. */
 export function LogoMark({ size = 36 }: { size?: number }) {
   return (
     <svg viewBox="0 0 48 48" width={size} height={size} fill="none" aria-hidden>
       {/* basket body — intentionally imperfect curves */}
       <path
         d="M9 20c.4-.8 1.2-1.3 2.1-1.2l26 .5c.9 0 1.7.6 2 1.4l.4 1.1c.2.6.1 1.2-.3 1.7l-3 3.9c-1.8 2.3-2.4 3.5-2.9 6.4l-.8 4.6c-.2 1-1 1.7-2 1.7l-13.2-.4c-1 0-1.8-.7-2-1.7l-1.2-6c-.4-2.2-1.1-3.5-2.6-5.3l-3-3.5c-.5-.5-.6-1.3-.3-2z"
-        stroke="#2E3192"
+        stroke="currentColor"
         strokeWidth="2.2"
         strokeLinejoin="round"
       />
       {/* weave lines */}
-      <path d="M12.5 24.5c6.5 1.6 17.5 1.5 23.6-.6M15 30.5c5.4 1.3 13.6 1.2 18.9-.5" stroke="#2E3192" strokeWidth="1.6" strokeLinecap="round" opacity=".55" />
+      <path d="M12.5 24.5c6.5 1.6 17.5 1.5 23.6-.6M15 30.5c5.4 1.3 13.6 1.2 18.9-.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity=".55" />
       {/* the loop: stock circulating back into the basket */}
       <path
         d="M14 17.5c-2.5-3.4-1.6-7.6 1.5-9.6 3.4-2.2 8.4-1 12.6 1.5 5 3 10.4 3.6 13.4.9"

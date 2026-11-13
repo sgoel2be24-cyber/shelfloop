@@ -1,145 +1,86 @@
-# ShelfLoop API Contract v1
+# ShelfLoop API contract
 
-Base URL: `http://localhost:8000/api`. All endpoints return JSON unless noted.
-Auth: `Authorization: Bearer <token>` from `POST /api/session`. Roles: `owner` (shop-scoped) and `operator`.
-Server-side rule: **only an owner token for shop X can approve/reject on behalf of shop X; operator tokens are rejected on decision endpoints.**
+Updated 25 October 2026. The frontend uses same-origin `/api`. The running backend exposes the full generated schema at `/docs` and `/openapi.json`. Money is integer paise; quantities are whole packs, even when a catalogue unit describes weight/volume.
 
-Demo credentials: operator PIN `0000`; every owner PIN `1234`.
+## Access
 
-## Lifecycle (authoritative)
+`POST /api/session {role: "owner"|"operator", shop_id?, pin}` returns a bearer token. Synthetic credentials: operator `0000`, owners `1234`; these are demo authentication, unsuitable for production.
 
-`PROPOSED → AWAITING_APPROVAL → APPROVED → SANDBOX_DISPATCHED → COMPLETED`
-Terminal alternates: `REJECTED`, `EXPIRED`, `CANCELLED`, `NEEDS_OPERATOR`.
+Owners access only their stock, needs, preferences, captures and participating plans. Only the relevant owner can approve/reject. Operators plan, submit, cancel, dispatch, view cluster analytics/evidence and inject sandbox failures. Public shop discovery supports sign-in; other shops' cash limits are omitted from public/owner directory results.
 
-- Entering `AWAITING_APPROVAL` atomically reserves every leg's stock for **10 minutes**.
-- Every affected owner must approve the exact plan version (`inputs_hash`).
-- Dispatch revalidates reservations, stock versions, budgets; only then runs sandbox actions.
-- Rejection / reservation timeout releases reservations. Material change ⇒ new version ⇒ fresh approvals.
-- Partial sandbox handoffs become exceptions; plan → `NEEDS_OPERATOR`.
+## Stock, needs and settings
 
-## Session
-
-```
-POST /api/session  {role: "owner"|"operator", shop_id?: int, pin: str}
-→ {token, role, shop_id|null, shop_name}
-```
-
-## Reference data
-
-```
-GET /api/shops → [{id, name, name_hi, owner_name, lat, lng, cash_limit_paise, sharing_opt_in, withdrawn}]
-GET /api/products → [{id, brand, name, name_hi, variant, pack_size, unit, category, mrp_paise, emoji, aliases:[str]}]
-GET /api/shops/{shop_id}/stock → [{lot_id, product_id, product_name, product_name_hi, emoji, qty, reserved_qty, available_qty,
-     retained_floor, cost_paise, expiry_date|null, days_to_expiry|null, condition, permit_share, slow, version}]
-GET /api/shops/{shop_id}/needs → [{id, product_id, product_name, qty, urgency: "urgent"|"normal",
-     alt_product_ids:[int], budget_paise, min_shelf_days, status}]
-GET /api/supplier-quotes?product_id= → [{id, product_id, supplier_name, price_paise, min_order_packs, lead_days}]
-```
-
-`paise` = integer Indian paise (₹1 = 100). All money is integer paise everywhere.
-
-## Capture (propose-only; nothing commits until confirm)
-
-```
-POST /api/captures  {shop_id, text}   # Hindi, English, code-switched
-→ {capture_id, status: "proposed"|"clarification_needed"|"failed",
-   proposals: [{kind: "stock_update"|"need", product_id|null, product_name|null, qty|null, unit|null,
-                price_ref_paise|null, confidence, ambiguity: null | {reason, candidates:[{product_id, product_name, name_hi, emoji}]},
-                question|null}],
-   engine: "rules"|"ollama"}
-POST /api/captures/audio  (multipart file=)  → same shape, or {status:"failed", engine:"speech", fallback:"manual-form"}
-POST /api/captures/invoice (multipart file=) → same shape, or {status:"failed", engine:"ocr", fallback:"manual-form"}
-POST /api/captures/{capture_id}/confirm  {edits:[{index, product_id, qty, unit, kind}]}
-   header: Idempotency-Key: <uuid>
-→ {applied: [{type:"stock_update"|"need", detail}], capture_status:"confirmed"}
-```
-
-Rules: ambiguous phrase (e.g. "₹10 wala biscuit" matching 3 SKUs) ⇒ `clarification_needed`, never committed.
-Voice/OCR are optional local models; when unavailable they return `failed` with `fallback:"manual-form"` — the UI must show the manual form.
-
-## Inventory & needs (owner-confirmed writes)
-
-```
-POST /api/inventory/confirm  {shop_id, changes:[{lot_id?, product_id, qty?, delta?, expiry_date?, condition?, permit_share?, slow?, retained_floor?}], reason}
-   header: Idempotency-Key → replays cached response on retry
-→ {applied:[...], shop_version}
-POST /api/needs  {shop_id, product_id, qty, urgency, alt_product_ids?, budget_paise?, min_shelf_days?}
+```text
+GET /api/shops
+GET /api/products
+GET /api/shops/{id}/stock
+GET /api/shops/{id}/needs
+GET /api/shops/{id}/pulse
+GET /api/shops/{id}/expiry-actions
+GET /api/shops/{id}/plans
+GET /api/supplier-quotes?product_id=...
+POST /api/needs
 DELETE /api/needs/{id}
-POST /api/supplier-quotes  {product_id, supplier_name, price_paise, min_order_packs?, lead_days?}
+POST /api/supplier-quotes
 ```
 
-## Planning
+Stock rows expose `lot_id`, product identity, qty, reserved/available quantities, retained floor, cost, date, condition/sharing/slow flags and version. Unknown cost uses zero as a sentinel, not an estimate. Unpriced and undated lots are excluded from exchanges.
 
-```
-POST /api/planning-runs  {case_id: "cluster-main", params?: {time_limit_ms?: 5000, min_shelf_days?: 14, radius_km?: 3.0, include_purchases?: true}}
-→ {run_id}
-GET  /api/planning-runs/{run_id}
-→ {status: "queued"|"running"|"done"|"error", progress: 0-100,
-   solver: {status: "OPTIMAL"|"FEASIBLE"|"INFEASIBLE"|"UNKNOWN", objective, time_ms, proven_optimal},
-   plan_id|null, why_not: null | {all_purchase: {...}, pairwise_only: {...}, expiry_move_only: {...}}, log: [str]}
-```
+`POST /api/needs` accepts `{shop_id, product_id, qty, urgency?, alt_product_ids?, budget_paise?, min_shelf_days?}`. The budget is a maximum unit price. Quotes accept `{product_id, supplier_name, price_paise, min_order_packs?, lead_days?}`.
 
-`solver.status` is reported exactly: a timeout is `UNKNOWN`/`FEASIBLE`, never "infeasible".
+`POST /api/inventory/confirm` accepts `{shop_id, changes:[{product_id, lot_id?, expected_version?, qty?, delta?, cost_paise?, expiry_date?, condition?, permit_share?, slow?, retained_floor?}], reason?}`. Existing lots require `expected_version`; stale writes return 409. Use absolute qty or delta, never both. New lots require qty and default private. The batch is atomic. Optional `Idempotency-Key` is scoped to actor and operation; identical retry replays, conflicting reuse returns 409.
 
-```
-GET /api/plans/{plan_id} → full decision receipt (shape below)
-GET /api/plans/{plan_id}/status → {status, reservations:[...], approvals:[...], sandbox_actions:[...], approvals_missing:[shop_id]}
-POST /api/plans/{plan_id}/approve  {}    # owner token, must match participant
-POST /api/plans/{plan_id}/reject   {reason}
-POST /api/plans/{plan_id}/cancel   {}    # operator only
-POST /api/plans/{plan_id}/dispatch {}    # operator only; revalidates then sandbox-executes
+`GET /api/shops/{id}/preferences` returns `{shop_id, version, cash_limit_paise, sharing_opt_in, held_cash_paise}`. The own-shop owner can PATCH `{expected_version, cash_limit_paise, sharing_opt_in}`. Limits below existing holds are rejected. Purchases, transport and outgoing balancing payments consume cash. Incoming balancing money cannot finance purchases in advance.
+
+## Capture: propose, review, confirm
+
+```text
+POST /api/captures {shop_id, text}
+POST /api/captures/invoice  multipart: shop_id, file
+POST /api/captures/audio    multipart: shop_id, file
+POST /api/captures/{id}/confirm {edits:[{index, product_id, qty, unit, kind, cost_paise?}]}
 ```
 
-### Decision receipt shape
+Proposals return capture_id, status, engine and rows. Ambiguous products/counts need explicit owner resolution. Confirm uses positive integer pack counts, atomically confirms once, and supports scoped Idempotency-Key. New stock stays private with unknown cost/date unless provided.
 
-```json
-{
-  "id": 12, "case_id": "cluster-main", "version": 2, "status": "AWAITING_APPROVAL",
-  "created_at": "...", "inputs_hash": "ab12...",
-  "participants": [1, 2, 3],
-  "cycles": [{
-     "id": "c1", "shop_path": [1, 3, 2],
-     "legs": [{"from_shop": 1, "to_shop": 3, "product_id": 4, "product_name": "Parle-G 100g",
-               "emoji": "🍪", "qty": 20, "unit": "pack", "unit_value_paise": 500, "value_paise": 10000,
-               "expiry_date": "2026-12-01", "shelf_days": 38}],
-     "balancing_paise_by_shop": {"1": -3000, "3": 8000, "2": -5000},
-     "transport_paise": 3600, "transport_per_shop_paise": 1200, "slow_packs_redeployed": 20
-  }],
-  "purchases": [{"shop_id": 2, "product_id": 9, "product_name": "Surf Excel 500g", "qty": 5, "unit_price_paise": 4200, "total_paise": 21000}],
-  "coverage": [{"shop_id": 2, "need_id": 31, "product_id": 9, "product_name": "Surf Excel 500g",
-                "qty_needed": 15, "qty_covered": 15, "source": "exchange", "urgency": "urgent"}],
-  "costs": {"goods_value_exchanged_paise": 46000,
-            "balancing_net_by_shop": {"1": -3000, "2": -5000, "3": 8000},
-            "purchases_paise": 21000, "transport_paise": 3600, "transaction_fee_paise": 0,
-            "cash_out_by_shop": {"1": 3000, "2": 26000, "3": -8000}},
-  "assumptions": ["Transport charged at ₹20/km/pack, split evenly", "..."],
-  "solver": {"status": "OPTIMAL", "objective": 48012300, "time_ms": 812, "proven_optimal": true},
-  "why_not": {"all_purchase": {"coverage_pct": 60, "cash_paise": 92000},
-               "pairwise_only": {"coverage_pct": 40, "cash_paise": 41000},
-               "expiry_move_only": {"note": "no near-expiry lots matched needs"}},
-  "approval_history": [{"shop_id": 1, "decision": "approved", "at": "...", "inputs_hash": "ab12..."}]
-}
+Uploads are limited to 8 MiB. TXT/CSV/text PDFs work. Optional image/audio engines return failed with `fallback:"manual-form"` when unavailable. Malformed media returns 422; oversized media 413. See [capture runtime](capture-runtime.md).
+
+## Planning and lifecycle
+
+`POST /api/planning-runs {case_id:"cluster-main",params?:{shop_ids?:[1,2,3],time_limit_ms?:5000,min_shelf_days?:14,radius_km?:3,include_purchases?:true,urgent_only?:false}}` returns run_id. Poll GET `/api/planning-runs/{run_id}` for queued/running/done/error, progress, log, solver and plan_id. Omit shop_ids to use all shops. A timeout is UNKNOWN/FEASIBLE, never fabricated INFEASIBLE. Candidate truncation is disclosed. Interrupted runs become errors on restart.
+
+```text
+GET /api/plans/{id}
+GET /api/plans/{id}/status
+POST /api/plans/{id}/submit
+POST /api/plans/{id}/approve
+POST /api/plans/{id}/reject {reason}
+POST /api/plans/{id}/cancel
+POST /api/plans/{id}/dispatch
 ```
 
-`balancing_paise_by_shop` positive = that shop pays cash, negative = shop is owed (modelled only inside this plan; never netted across plans). `cash_out_by_shop` = what the owner must be able to spend; enforced ≤ cash limit.
+Normal path: PROPOSED -> AWAITING_APPROVAL -> APPROVED -> COMPLETED through sandbox dispatch. Alternatives: REJECTED, EXPIRED, CANCELLED, NEEDS_OPERATOR. Submission atomically holds stock/cash for ten minutes, including purchase-only plans. Each affected owner approves the immutable plan/version. Source shop/stock/need/quote versions and deadline are checked at dispatch. Repeated/concurrent dispatch cannot execute twice. Material changes require a fresh plan and approvals.
 
-## Sandbox (failure rehearsal + simulated execution)
+Receipts contain id, version, status, creation/deadline, fingerprint, participants, cycles, purchases, coverage, costs, assumptions, solver, comparisons and approval_history. Cycle fields include legs, shop_path, balancing_paise_by_shop, transport_paise and exact transport_by_shop_paise. Rounded transport_per_shop_paise is informational only. Leg qty is always packs.
 
+Positive balancing means pays; negative means owed. `costs.cash_out_by_shop` is nonnegative cash needed per owner; gross_cash_out_paise sums it. external_cash_paise is purchases plus transport; balancing_cash_paise is outgoing balancing cash. All comparison bars use gross cash consistently.
+
+Approval history exposes shop_id, decision, decided_at, alias at, and the immutable plan inputs_hash in both owner discovery and full receipts. Status includes reservations, approvals, approvals_missing and sandbox actions.
+
+## Sandbox and evidence
+
+```text
+POST /api/sandbox/inject {type:"withdraw_shop"|"reduce_stock"|"disconnect",shop_id,product_id?,qty?}
+POST /api/sandbox/reset
+GET /api/sandbox/state
+GET /api/cases/{id}/summary
+GET /api/cases/{id}/directory
+GET /api/cases/{id}/plans
+GET /api/cases/{id}/events?limit=200
+GET /api/cases/{id}/export
+GET /api/health
 ```
-POST /api/sandbox/inject {type: "withdraw_shop"|"reduce_stock"|"disconnect", shop_id, product_id?, qty?}
-→ {injection_id, effect}
-POST /api/sandbox/reset → {ok}
-GET  /api/sandbox/state → {injections: [...], withdrawn_shops: [...], disconnected_shops: [...]}
-```
 
-Effects: `withdraw_shop` invalidates plans including that shop at revalidation (→ `NEEDS_OPERATOR`, then operator re-plans → new version, fresh approvals). `reduce_stock` breaks reservation revalidation. `disconnect` blocks approvals + loses one sandbox ack (→ partial handoff exception).
+Withdrawal/stock changes invalidate relevant plans at revalidation. Disconnection may cause a partial handoff. Only delivered quantities fulfil needs; unresolved obligations remain held for operator reconciliation. Supplier acknowledgement includes immediate simulated inventory receipt. Reset clears injected flags, not completed inventory changes. No real supplier, delivery or payment action occurs.
 
-## Events / evidence
-
-```
-GET /api/cases/{case_id}/events?limit=200 → [{id, ts, actor, event_type, ref_type, ref_id, payload}]
-GET /api/cases/{case_id}/export → JSON download (anonymised evidence report)
-GET /api/health → {ok, shops, products, open_reservations}
-```
-
-Errors: `{detail: string}` with 400/401/403/404/409. 409 = state conflict (e.g. approving a superseded version).
+Health includes capture_capabilities. Export uses synthetic records and shop IDs; this is not a production privacy guarantee. APIs are network-only in the service worker. Errors use detail (string or validation list): 401 unauthenticated, 403 ownership/role, 404 missing, 409 conflicting/stale, 413 too large, 422 invalid input. Unknown API paths return JSON 404.

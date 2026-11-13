@@ -12,18 +12,18 @@ export interface StoredSession {
 }
 
 export function storeSession(info: StoredSession): void {
-  localStorage.setItem(TOKEN_KEY, info.token)
-  localStorage.setItem(
+  sessionStorage.setItem(TOKEN_KEY, info.token)
+  sessionStorage.setItem(
     SESSION_KEY,
     JSON.stringify({ role: info.role, shop_id: info.shopId, shop_name: info.shopName }),
   )
 }
 
 export function getSession(): StoredSession | null {
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = sessionStorage.getItem(TOKEN_KEY)
   if (!token) return null
   try {
-    const raw = localStorage.getItem(SESSION_KEY)
+    const raw = sessionStorage.getItem(SESSION_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as { role?: string; shop_id?: number | null; shop_name?: string }
     if (parsed.role !== 'owner' && parsed.role !== 'operator') return null

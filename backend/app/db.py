@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS plans(
   proposal TEXT NOT NULL,
   inputs_hash TEXT NOT NULL,
   participants TEXT NOT NULL,
+  approval_expires_at TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -121,6 +122,18 @@ CREATE TABLE IF NOT EXISTS reservations(
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS ix_res_plan ON reservations(plan_id);
+CREATE INDEX IF NOT EXISTS ix_res_lot_active ON reservations(lot_id, status, expires_at);
+
+CREATE TABLE IF NOT EXISTS cash_reservations(
+  id INTEGER PRIMARY KEY,
+  plan_id INTEGER NOT NULL REFERENCES plans(id),
+  shop_id INTEGER NOT NULL REFERENCES shops(id),
+  amount_paise INTEGER NOT NULL CHECK(amount_paise >= 0),
+  expires_at TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active'
+);
+CREATE INDEX IF NOT EXISTS ix_cash_res_shop_active ON cash_reservations(shop_id, status, expires_at);
+CREATE INDEX IF NOT EXISTS ix_cash_res_plan ON cash_reservations(plan_id);
 
 CREATE TABLE IF NOT EXISTS approvals(
   id INTEGER PRIMARY KEY,
@@ -130,6 +143,7 @@ CREATE TABLE IF NOT EXISTS approvals(
   reason TEXT,
   decided_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS ix_approvals_plan_shop ON approvals(plan_id, shop_id);
 
 CREATE TABLE IF NOT EXISTS sandbox_actions(
   id INTEGER PRIMARY KEY,
@@ -205,6 +219,14 @@ def init_db(db_path=None) -> None:
     conn = connect(db_path)
     try:
         conn.executescript(SCHEMA)
+        # Existing demo databases are preserved; introduce the explicit deadline in place.
+        columns = {r["name"] for r in conn.execute("PRAGMA table_info(plans)")}
+        if "approval_expires_at" not in columns:
+            conn.execute("ALTER TABLE plans ADD COLUMN approval_expires_at TEXT")
+        conn.execute(
+            "UPDATE plans SET approval_expires_at = strftime('%Y-%m-%dT%H:%M:%SZ', "
+            "updated_at, '+600 seconds') WHERE approval_expires_at IS NULL "
+            "AND status IN ('AWAITING_APPROVAL','APPROVED')")
     finally:
         conn.close()
 

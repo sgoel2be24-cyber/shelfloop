@@ -15,21 +15,31 @@ def get_state(conn) -> dict:
 
 
 def inject(conn, payload: dict, actor: str) -> dict:
-    kind = payload["type"]
+    kind = payload.get("type")
     shop_id = payload.get("shop_id")
+    if not isinstance(shop_id, int) or isinstance(shop_id, bool):
+        raise ValueError("shop_id must identify an existing shop")
+    if not conn.execute("SELECT 1 FROM shops WHERE id=?", (shop_id,)).fetchone():
+        raise ValueError("shop not found")
     if kind == "withdraw_shop":
         conn.execute("UPDATE shops SET withdrawn=1, version=version+1 WHERE id=?", (shop_id,))
         effect = f"shop {shop_id} withdrawn: it is excluded from planning; plans including it fail revalidation"
     elif kind == "disconnect":
         conn.execute("UPDATE shops SET disconnected=1, version=version+1 WHERE id=?", (shop_id,))
-        effect = f"shop {shop_id} disconnected: its approvals are blocked and one sandbox handoff will be lost"
+        effect = f"shop {shop_id} disconnected: approvals are blocked and existing plans must be revalidated"
     elif kind == "reduce_stock":
+        product_id = payload.get("product_id")
+        qty = payload.get("qty", 1)
+        if not isinstance(product_id, int) or isinstance(product_id, bool):
+            raise ValueError("product_id must identify a product")
+        if not isinstance(qty, int) or isinstance(qty, bool) or qty <= 0:
+            raise ValueError("qty must be a positive integer number of packs")
         lot = conn.execute(
             "SELECT * FROM stock_lots WHERE shop_id=? AND product_id=? ORDER BY qty DESC LIMIT 1",
-            (shop_id, payload["product_id"])).fetchone()
+            (shop_id, product_id)).fetchone()
         if not lot:
             raise ValueError("no such lot")
-        take = min(payload.get("qty", 1), lot["qty"])
+        take = min(qty, lot["qty"])
         conn.execute("UPDATE stock_lots SET qty=qty-?, version=version+1, updated_at=? WHERE id=?",
                      (take, db.now_iso(), lot["id"]))
         conn.execute(

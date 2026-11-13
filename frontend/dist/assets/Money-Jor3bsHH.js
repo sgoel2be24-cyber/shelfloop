@@ -1,1 +1,0 @@
-import{f as e,h as t}from"./index-BTe_V8N0.js";import{n}from"./format-CFaHt2_C.js";var r=t();function i({paise:t,className:i}){let{lang:a}=e();return(0,r.jsx)(`span`,{className:`tabular whitespace-nowrap ${i??``}`,children:n(t,a)})}export{i as t};

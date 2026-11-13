@@ -6,14 +6,14 @@ import { Money } from './Money'
 
 const W = 720
 const H = 480
-const PAD = 56
+const PAD = 90
 
 interface Pt {
   x: number
   y: number
 }
 
-const CYCLE_COLORS = ['#2E3192', '#E8702A', '#0E7490', '#7C3AED', '#BE185D', '#15803D', '#B45309', '#1D4ED8']
+const CYCLE_COLORS = ['#174C3C', '#B6532D', '#0E7490', '#687F3A', '#9C4262', '#15803D', '#B45309', '#366B7F']
 
 const mid = (a: Pt, b: Pt): Pt => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
 const sub = (a: Pt, b: Pt): Pt => ({ x: a.x - b.x, y: a.y - b.y })
@@ -26,14 +26,14 @@ function trunc(s: string, n = 14): string {
 }
 
 /**
- * Interactive inline-SVG exchange graph: shops positioned by lat/lng, cycle legs
+ * Interactive inline-SVG exchange graph: shops positioned schematically, cycle legs
  * coloured per cycle, purchases from a supplier node. Click a node to focus its
  * flows; everything else dims.
  */
 export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | null }) {
   const { t, lang } = useI18n()
   const [focus, setFocus] = useState<number | null>(null)
-  const [showPurchases, setShowPurchases] = useState(true)
+  const [showPurchases, setShowPurchases] = useState(false)
   const name = (id: number) => shopLabel(shops?.find((s) => s.id === id), id, lang)
 
   const known = (plan.participants ?? [])
@@ -51,39 +51,24 @@ export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | nul
           lng: 0,
           cash_limit_paise: 0,
           sharing_opt_in: false,
-          withdrawn: false,
+          withdrawn: false, version: 1,
         }))
 
   const pos = useMemo(() => {
     const m = new Map<number, Pt>()
-    const lats = nodes.map((s) => s.lat)
-    const lngs = nodes.map((s) => s.lng)
-    const minLat = Math.min(...lats)
-    const maxLat = Math.max(...lats)
-    const minLng = Math.min(...lngs)
-    const maxLng = Math.max(...lngs)
-    if (maxLat - minLat < 1e-9 && maxLng - minLng < 1e-9) {
-      const cx = W / 2
-      const cy = H / 2
-      const R = Math.min(W, H) / 2 - PAD
-      nodes.forEach((s, i) => {
-        const a = (i / Math.max(1, nodes.length)) * Math.PI * 2 - Math.PI / 2
-        m.set(s.id, { x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) })
+    nodes.forEach((s, i) => {
+      const angle = (i / Math.max(1, nodes.length)) * Math.PI * 2 - Math.PI / 2
+      m.set(s.id, {
+        x: W / 2 + (W / 2 - PAD) * Math.cos(angle),
+        y: H / 2 + 20 + (H / 2 - PAD) * Math.sin(angle),
       })
-    } else {
-      for (const s of nodes) {
-        m.set(s.id, {
-          x: PAD + ((s.lng - minLng) / (maxLng - minLng || 1)) * (W - 2 * PAD),
-          y: H - (PAD + ((s.lat - minLat) / (maxLat - minLat || 1)) * (H - 2 * PAD)),
-        })
-      }
-    }
+    })
     return m
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shops, plan.id, plan.version])
 
   const hasPurchases = showPurchases && (plan.purchases ?? []).length > 0
-  const supplier: Pt = { x: W / 2, y: 34 }
+  const supplier: Pt = { x: W - 65, y: 42 }
 
   interface Edge {
     d: string
@@ -106,9 +91,12 @@ export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | nul
       : { x: W / 2, y: H / 2 }
 
     legs.forEach((leg, i) => {
-      const p1 = pos.get(leg.from_shop)
-      const p2 = pos.get(leg.to_shop)
-      if (!p1 || !p2) return
+      const from = pos.get(leg.from_shop)
+      const to = pos.get(leg.to_shop)
+      if (!from || !to) return
+      const direction = mul(sub(to, from), 1 / vlen(sub(to, from)))
+      const p1 = add(from, mul(direction, 29))
+      const p2 = sub(to, mul(direction, 29))
       let d: string
       let label: Pt
       if (legs.length >= 3) {
@@ -176,8 +164,9 @@ export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | nul
         </label>
       </div>
 
+      <p className="text-xs text-ink/60">{lang === 'hi' ? 'सांकेतिक दृश्य — दूरी नक्शे के अनुसार नहीं है। दुकान चुनकर उसका लेन-देन देखें।' : 'Schematic view — positions are not geographic. Select a shop to inspect its flows.'}</p>
       <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto h-auto w-full max-w-3xl" role="img" aria-label={t('graph.title')}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto h-auto w-full max-w-3xl" role="group" aria-label={t('graph.title')}>
           <defs>
             {CYCLE_COLORS.map((c, i) => (
               <marker key={i} id={`sl-arrow-${i}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -222,7 +211,7 @@ export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | nul
 
           {hasPurchases && (
             <g opacity={focus !== null && !edges.some((e) => e.cycleId === 'purch' && (e.from === focus || e.to === focus)) ? 0.3 : 1}>
-              <circle cx={supplier.x} cy={supplier.y} r={20} fill="#FFF3E9" stroke="#E8702A" strokeWidth={2} strokeDasharray="4 3" />
+              <circle cx={supplier.x} cy={supplier.y} r={30} fill="#FFF3E9" stroke="#E8702A" strokeWidth={2} strokeDasharray="4 3" />
               <text x={supplier.x} y={supplier.y + 4} textAnchor="middle" fontSize={10} fontWeight={700} fill="#E8702A">
                 {t('graph.supplier')}
               </text>
@@ -237,6 +226,16 @@ export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | nul
             return (
               <g
                 key={s.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`${name(s.id)} — ${t('graph.clickFocus')}`}
+                aria-pressed={isFocus}
+                onKeyDown={event => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    setFocus(isFocus ? null : s.id)
+                  }
+                }}
                 opacity={dim ? 0.25 : 1}
                 className="cursor-pointer transition-opacity"
                 onClick={() => setFocus(isFocus ? null : s.id)}
@@ -246,16 +245,17 @@ export function ExchangeGraph({ plan, shops }: { plan: Plan; shops: Shop[] | nul
                   cx={p.x}
                   cy={p.y}
                   r={isFocus ? 28 : 24}
-                  fill={isFocus ? '#2E3192' : '#FFFFFF'}
-                  stroke="#2E3192"
+                  fill={isFocus ? '#174C3C' : '#FFFFFF'}
+                  stroke="#174C3C"
                   strokeWidth={2.5}
                   className="transition-all"
                 />
-                <text x={p.x} y={p.y - 3} textAnchor="middle" fontSize={13} fontWeight={800} fill={isFocus ? '#FFFFFF' : '#2E3192'}>
+                <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize={13} fontWeight={800} fill={isFocus ? '#FFFFFF' : '#174C3C'}>
                   #{s.id}
                 </text>
-                <text x={p.x} y={p.y + 11} textAnchor="middle" fontSize={9} fill={isFocus ? '#FAF5EC' : '#1F2430'}>
-                  {trunc(name(s.id), 12)}
+                <rect x={p.x - 82} y={p.y + 29} width={164} height={21} rx={6} fill="#FFFFFF" />
+                <text x={p.x} y={p.y + 43} textAnchor="middle" fontSize={11} fill="#21352D">
+                  {trunc(name(s.id), 26)}
                 </text>
               </g>
             )

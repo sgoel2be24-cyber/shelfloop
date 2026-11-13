@@ -70,4 +70,4 @@ def test_owner_isolated_to_own_shop(client):
                     headers=auth_headers(tok))
     assert r.status_code == 403
     r = client.get("/api/shops/2/stock", headers=auth_headers(tok))
-    assert r.status_code == 200  # reads of other shops' shared surplus are allowed
+    assert r.status_code == 403  # owners cannot inspect another shop's full/private stock
